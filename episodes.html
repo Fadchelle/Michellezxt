@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Episode - Michie Hots</title>
+    <style>
+        /* Style umum */
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f1f1f;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            color: #00bcd4;
+            font-size: 32px;
+        }
+
+        #category-name {
+            text-align: center;
+            font-size: 24px;
+            color: #00bcd4;
+            margin-top: 20px;
+        }
+
+        /* Daftar episode */
+        .episode-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .episode {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .episode:hover {
+            background-color: #00bcd4;
+        }
+
+        .episode p {
+            margin: 0;
+            color: white;
+            font-size: 18px;
+        }
+
+        .episode:active {
+            background-color: #0097a7;
+        }
+
+        /* Responsivitas */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            #category-name {
+                font-size: 20px;
+            }
+
+            .episode-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Daftar Episode - Michie Hots</h1>
+    </header>
+    
+    
+<a href="index.html" class="back-button" style="position: absolute; top: 10px; left: 0px; width: 45px; height: 45px;">
+    <img src="https://i.imgur.com/CJNw1Ow.png" alt="Kembali" style="width: 100%; height: 100%;">
+</a>
+
+
+    <div id="category-name">
+        <!-- Nama kategori akan dimuat di sini melalui JavaScript -->
+    </div>
+
+    <div class="episode-list" id="episode-list">
+        <!-- Daftar episode akan dimuat di sini melalui JavaScript -->
+    </div>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function loadEpisodes() {
+            const anime = getQueryParam('anime');
+            const episodeList = document.getElementById('episode-list');
+            const categoryName = document.getElementById('category-name');
+
+            if (!anime) {
+                episodeList.innerHTML = "<p>Anime tidak ditemukan. Pastikan link yang digunakan benar.</p>";
+                return;
+            }
+
+            let categoryTitle = '';
+            switch (anime) {
+                case 'michooy':
+                    categoryTitle = 'Kategori: Michooy';
+                    break;
+                case 'michelles':
+                    categoryTitle = 'Kategori: Michelles';
+                    break;
+                case 'michoooos':
+                    categoryTitle = 'Kategori: Michoooos';
+                    break;
+                case 'michsx':
+                    categoryTitle = 'Kategori: Michsx';
+                    break;
+                case 'michahhs':
+                    categoryTitle = 'Kategori: Michahhs';
+                    break;
+                default:
+                    categoryTitle = 'Kategori tidak dikenal';
+                    break;
+            }
+            categoryName.innerText = categoryTitle;
+
+            const animeEpisodes = {
+                michooy: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michelles: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michoooos: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michsx: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michahhs: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+            };
+
+            let episodes = [];
+            for (let i = 0; i < 12; i++) {
+                episodes.push(`<div class="episode" onclick="playEpisode('${anime}', ${i + 1})">
+                                   <p>Episode ${i + 1}</p>
+                               </div>`);
+            }
+
+            episodeList.innerHTML = episodes.join('');
+        }
+
+        function playEpisode(anime, episode) {
+            window.location.href = `player.html?anime=${anime}&episode=${episode}`;
+        }
+
+        window.onload = loadEpisodes;
+    </script>
+
+</body>
+</html>
