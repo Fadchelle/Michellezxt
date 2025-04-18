@@ -3,168 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Episode - Michie Hots</title>
+    <title>Michie Hots</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Style umum */
         body {
-            background-color: #121212;
-            color: white;
             font-family: 'Arial', sans-serif;
+            background-color: #121212; /* Latar belakang hitam */
+            color: white;
             margin: 0;
             padding: 0;
         }
 
         header {
-            background-color: #1f1f1f;
-            padding: 20px;
+            background-color: #1f1f1f; /* Darker shade for header */
             text-align: center;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
-        h1 {
+        header h1 {
             margin: 0;
-            color: #00bcd4;
-            font-size: 32px;
+            font-size: 40px;
+            color: #00bcd4; /* Warna biru terang untuk judul */
+            letter-spacing: 2px;
         }
 
-        #category-name {
-            text-align: center;
-            font-size: 24px;
-            color: #00bcd4;
-            margin-top: 20px;
-        }
-
-        /* Daftar episode */
-        .episode-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        .anime-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 20px;
             padding: 20px;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
-        .episode {
-            background-color: #222;
-            padding: 20px;
-            border-radius: 10px;
+        .anime {
+            background-color: #232323; /* Card background */
+            padding: 15px;
+            border-radius: 15px;
+            width: 250px;
             text-align: center;
+            transition: transform 0.3s ease-in-out;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
-        .episode:hover {
-            background-color: #00bcd4;
+        .anime img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .episode p {
-            margin: 0;
-            color: white;
+        .anime p {
+            margin-top: 10px;
             font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .episode:active {
-            background-color: #0097a7;
+        .anime:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            background-color: #00bcd4; /* Biru pada hover */
         }
 
-        /* Responsivitas */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 24px;
-            }
-
-            #category-name {
-                font-size: 20px;
-            }
-
-            .episode-list {
-                grid-template-columns: 1fr 1fr;
-            }
+        .anime:hover p {
+            color: white;
         }
 
+        /* Style untuk scrollbar pada bagian daftar anime */
+        .anime-list::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .anime-list::-webkit-scrollbar-thumb {
+            background: #00bcd4; /* Warna biru pada scrollbar */
+            border-radius: 10px;
+        }
+
+        .anime-list::-webkit-scrollbar-track {
+            background: #121212; /* Track scrollbar berwarna hitam */
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Daftar Episode - Michie Hots</h1>
+        <h1>Michie Hots</h1>
     </header>
-    
-    
-<a href="index.html" class="back-button" style="position: absolute; top: 10px; left: 0px; width: 45px; height: 45px;">
-    <img src="https://files.catbox.moe/3l8h8d.png" alt="Kembali" style="width: 100%; height: 100%;">
-</a>
 
 
-    <div id="category-name">
-        <!-- Nama kategori akan dimuat di sini melalui JavaScript -->
+    <div class="anime-list">
+        <div class="anime" onclick="openAnime('michooy')">
+            <img src="https://files.catbox.moe/dnyaor.jpg" alt="Michooy">
+            <p>Michooy</p>
+        </div>
+        <div class="anime" onclick="openAnime('michelles')">
+            <img src="https://files.catbox.moe/ibj4a2.jpg" alt="Michelles">
+            <p>Michelles</p>
+        </div>
+        <div class="anime" onclick="openAnime('michoooos')">
+            <img src="https://files.catbox.moe/m2hd2v.jpeg" alt="Michoooos">
+            <p>Michoooos</p>
+        </div>
+        <div class="anime" onclick="openAnime('michsx')">
+            <img src="https://files.catbox.moe/4tjwfo.jpeg" alt="Michsx">
+            <p>Michsx</p>
+        </div>
+        <div class="anime" onclick="openAnime('michahhs')">
+            <img src="https://files.catbox.moe/fgynpk.jpeg" alt="Michahhs">
+            <p>Michahhs</p>
+        </div>
+        <div class="anime" onclick="openAnime('ngabalex')">
+            <img src="https://files.catbox.moe/x0u6wh.jpg" alt="Ngabalex">
+            <p>Ngabalex</p>
+        </div>
+        <div class="anime" onclick="openAnime('mecistop')">
+            <img src="https://files.catbox.moe/jrtpe5.jpg" alt="Mecistop">
+            <p>Mecistop</p>
+        </div>
+        <div class="anime" onclick="openAnime('cece')">
+            <img src="https://files.catbox.moe/u7sd04.jpg" alt="Cece">
+            <p>Cece</p>
+        </div>
+        <div class="anime" onclick="openAnime('michieer')">
+            <img src="https://files.catbox.moe/yua9ji.jpg" alt="Michieer">
+            <p>Michieer</p>
+        </div>
     </div>
-
-    <div class="episode-list" id="episode-list">
-        <!-- Daftar episode akan dimuat di sini melalui JavaScript -->
-    </div>
+    
 
     <script>
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+        function openAnime(anime) {
+            window.location.href = `episodes.html?anime=${anime}`;
         }
-
-        function loadEpisodes() {
-            const anime = getQueryParam('anime');
-            const episodeList = document.getElementById('episode-list');
-            const categoryName = document.getElementById('category-name');
-
-            if (!anime) {
-                episodeList.innerHTML = "<p>Anime tidak ditemukan. Pastikan link yang digunakan benar.</p>";
-                return;
-            }
-
-            let categoryTitle = '';
-            switch (anime) {
-                case 'michooy':
-                    categoryTitle = 'Kategori: Michooy';
-                    break;
-                case 'michelles':
-                    categoryTitle = 'Kategori: Michelles';
-                    break;
-                case 'michoooos':
-                    categoryTitle = 'Kategori: Michoooos';
-                    break;
-                case 'michsx':
-                    categoryTitle = 'Kategori: Michsx';
-                    break;
-                case 'michahhs':
-                    categoryTitle = 'Kategori: Michahhs';
-                    break;
-                default:
-                    categoryTitle = 'Kategori tidak dikenal';
-                    break;
-            }
-            categoryName.innerText = categoryTitle;
-
-            const animeEpisodes = {
-                michooy: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-                michelles: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-                michoooos: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-                michsx: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-                michahhs: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-            };
-
-            let episodes = [];
-            for (let i = 0; i < 12; i++) {
-                episodes.push(`<div class="episode" onclick="playEpisode('${anime}', ${i + 1})">
-                                   <p>Episode ${i + 1}</p>
-                               </div>`);
-            }
-
-            episodeList.innerHTML = episodes.join('');
-        }
-
-        function playEpisode(anime, episode) {
-            window.location.href = `player.html?anime=${anime}&episode=${episode}`;
-        }
-
-        window.onload = loadEpisodes;
     </script>
 
 </body>
