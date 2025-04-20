@@ -3,286 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player - Michie Hots</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Michie Hots</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
-            background-color: #121212;
+            font-family: 'Arial', sans-serif;
+            background-color: #121212; /* Latar belakang hitam */
             color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
+            padding: 0;
         }
 
         header {
-            background-color: #1f1f1f;
-            padding: 20px;
+            background-color: #1f1f1f; /* Darker shade for header */
+            text-align: center;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
-        h1 {
+        header h1 {
             margin: 0;
-            color: #00bcd4;
+            font-size: 40px;
+            color: #00bcd4; /* Warna biru terang untuk judul */
+            letter-spacing: 2px;
         }
 
-        .category-name {
-            font-size: 20px;
-            color: #00bcd4;
-            margin-top: 10px;
-        }
-
-        .video-container {
-            width: 80%;
-            max-width: 800px;
-            margin: auto;
-            background-color: #000;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 450px;
-            border-radius: 10px;
-        }
-
-        .episode-list {
+        .anime-list {
             display: flex;
-            justify-content: start;
-            margin-top: 20px;
-            flex-wrap: nowrap;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 10px;
-            margin-bottom: 20px;
-            white-space: nowrap;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 30px;
         }
 
-        .episode-list button {
-            background-color: #222;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+        .anime {
+            background-color: #232323; /* Card background */
+            padding: 15px;
+            border-radius: 15px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
             cursor: pointer;
-            transition: background-color 0.3s;
-            flex-shrink: 0;
-            width: 100px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
-        .episode-list button:hover {
-            background-color: #00bcd4;
+        .anime img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .episode-list button:focus {
-            outline: none;
+        .anime p {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .episode-list button:active {
-            background-color: #4682B4;
+        .anime:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            background-color: #00bcd4; /* Biru pada hover */
+        }
+
+        .anime:hover p {
+            color: white;
+        }
+
+        /* Style untuk scrollbar pada bagian daftar anime */
+        .anime-list::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .anime-list::-webkit-scrollbar-thumb {
+            background: #00bcd4; /* Warna biru pada scrollbar */
+            border-radius: 10px;
+        }
+
+        .anime-list::-webkit-scrollbar-track {
+            background: #121212; /* Track scrollbar berwarna hitam */
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Michie Hots</h1>
-</header>
-
-<a href="episodes.html" class="back-button" style="position: absolute; top: 10px; left: 0px; width: 45px; height: 45px;">
-    <img src="https://files.catbox.moe/3l8h8d.png" alt="Kembali" style="width: 100%; height: 100%;">
-</a>
+    <header>
+        <h1>Michie Hots</h1>
+    </header>
 
 
-<!-- Kategori Anime -->
-<div class="category-name" id="category-name">
-    <!-- Nama kategori akan dimuat di sini melalui JavaScript -->
-</div>
+    <div class="anime-list">
+        <div class="anime" onclick="openAnime('michooy')">
+            <img src="https://files.catbox.moe/dnyaor.jpg" alt="Michooy">
+            <p>Michooy</p>
+        </div>
+        <div class="anime" onclick="openAnime('michelles')">
+            <img src="https://files.catbox.moe/ibj4a2.jpg" alt="Michelles">
+            <p>Michelles</p>
+        </div>
+        <div class="anime" onclick="openAnime('michoooos')">
+            <img src="https://files.catbox.moe/m2hd2v.jpeg" alt="Michoooos">
+            <p>Michoooos</p>
+        </div>
+        <div class="anime" onclick="openAnime('michsx')">
+            <img src="https://files.catbox.moe/4tjwfo.jpeg" alt="Michsx">
+            <p>Michsx</p>
+        </div>
+        <div class="anime" onclick="openAnime('michahhs')">
+            <img src="https://files.catbox.moe/fgynpk.jpeg" alt="Michahhs">
+            <p>Michahhs</p>
+        </div>
+        <div class="anime" onclick="openAnime('ngabalex')">
+            <img src="https://files.catbox.moe/x0u6wh.jpg" alt="Ngabalex">
+            <p>Ngabalex</p>
+        </div>
+        <div class="anime" onclick="openAnime('mecistop')">
+            <img src="https://files.catbox.moe/jrtpe5.jpg" alt="Mecistop">
+            <p>Mecistop</p>
+        </div>
+        <div class="anime" onclick="openAnime('cece')">
+            <img src="https://files.catbox.moe/u7sd04.jpg" alt="Cece">
+            <p>Cece</p>
+        </div>
+        <div class="anime" onclick="openAnime('michieer')">
+            <img src="https://files.catbox.moe/yua9ji.jpg" alt="Michieer">
+            <p>Michieer</p>
+        </div>
+    </div>
+    
 
-<!-- Video Player -->
-<div class="video-container">
-    <iframe id="videoPlayer" src="" allow="autoplay" allowfullscreen></iframe>
-</div>
-
-<!-- Episode List -->
-<div class="episode-list" id="episodeListContainer">
-    <!-- Episode buttons will be generated by JavaScript -->
-</div>
-
-<script>
-    const animeEpisodes = {
-    michooy: [
-        'https://drive.google.com/file/d/1-g8sxy5Jyec6uxkJL4hh1zvyJWKye2ok/preview', // Episode 1
-        'https://drive.google.com/file/d/1-zdY2u4GRaGlCLqW5Ii7FD9SJ1SeW6fN/preview', // Episode 2
-        'https://drive.google.com/file/d/10tPGS4z8w3upToRLGwTP9s6nSQVteuCK/preview', // Episode 3
-        'https://drive.google.com/file/d/11Qhhbm8aYvORZgaBxaZIwKcX6O2wBaHx/preview', // Episode 4
-        'https://drive.google.com/file/d/11scHOXHneWwabI1VZPyMDk1TnWqopRO6/preview', // Episode 5
-        'https://drive.google.com/file/d/12BhnXyR21g2Y2c2VT8R-PasQsGymWYuK/preview', // Episode 6
-        'https://drive.google.com/file/d/12qQliLd0qBQvv3Zd9SFmQI1YJLNem2pO/preview', // Episode 7
-        'https://drive.google.com/file/d/13EzdltQcW3KmjL-tQK0MEPbWosyBpmiI/preview', // Episode 8
-        'https://drive.google.com/file/d/13MVnb5oOm55gORrM2sDNnbL4IkoSzmhQ/preview', // Episode 9
-        'https://drive.google.com/file/d/13cbvrv6njgFKyO7wdkWxyNLj_fp87GKO/preview', // Episode 10
-        'https://drive.google.com/file/d/1YbqDWxJp7nKYZAuRSTXkswOO3H3Q9Ha2/preview', // Episode 11
-        'https://drive.google.com/file/d/1h_2JzLg_UlhXp8-7wspUpGnJ733aPCMS/preview'  // Episode 12
-    ],
-    michelles: [
-        'https://drive.google.com/file/d/1-ujrALAERXIeH-JMBmIBRNKvSxzczohd/preview', // Episode 1
-        'https://drive.google.com/file/d/10R8NtBQcr6ZmxlUxxhdjxTZweumni9rG/preview', // Episode 2
-        'https://drive.google.com/file/d/110TX0H4AefpZ35qF3O3nylSIv2CcTdWC/preview', // Episode 3
-        'https://drive.google.com/file/d/11Up8IaqHHT0_ghxTkt2uFxYkismnNI53/preview', // Episode 4
-        'https://drive.google.com/file/d/11vVbM953lSYAnvKGMAkOj0TMae6h00gx/preview', // Episode 5
-        'https://drive.google.com/file/d/12PXNtJsU1CCeiI_t-ksk9qpmJvngTepo/preview', // Episode 6
-        'https://drive.google.com/file/d/12tgT8a5jFSwUcstECZHmO6wiBauoxEVp/preview', // Episode 7
-        'https://drive.google.com/file/d/13F6SEA0q659mIc2JPDSYhr5en45yRqdb/preview', // Episode 8
-        'https://drive.google.com/file/d/13RjGkFD2-GEHc0J5cSgvKPrCJcdD1wK3/preview', // Episode 9
-        'https://drive.google.com/file/d/13fJuQTwNzjMNIfljhHFytaRLMX8DzuL2/preview', // Episode 10
-        'https://drive.google.com/file/d/1YjUI6L6yfAlnNA6PljOSs2YVEGBcbOmO/preview', // Episode 11
-        'https://drive.google.com/file/d/1hazt-8p018FUcS-vHgN8qeunqtYmYXGm/preview'  // Episode 12
-    ],
-    michoooos: [
-        'https://drive.google.com/file/d/1-t1ksFecI2EtvKJDFWrJoSBfPUQuYAMp/preview', // Episode 1
-        'https://drive.google.com/file/d/10V1dw6pQowBJuKyvkR2h_sJTL9r8tvJX/preview', // Episode 2
-        'https://drive.google.com/file/d/11GjPXo1fz4Uch_Lc7zR2s8ao7MLUsaEU/preview', // Episode 3
-        'https://drive.google.com/file/d/11iSb3X5GJGA933MfoPvfzH6OVaaIn7Gc/preview', // Episode 4
-        'https://drive.google.com/file/d/13acGKZe7fpWj92TUM0Pufnx7SyoUzZgv/preview', // Episode 5
-        'https://drive.google.com/file/d/12jIKhqPVIOIzRJSkvPlgjOGRNJrHNFaF/preview', // Episode 6
-        'https://drive.google.com/file/d/12zv0Kqqs2TiA_P5KxpeVlq4P8cTv0UJF/preview', // Episode 7
-        'https://drive.google.com/file/d/13I9Ogy1mSnBPhycaUGQPfFzHChN5aJqS/preview', // Episode 8
-        'https://drive.google.com/file/d/13T5rL4Hb30pnWCpblgjRrUXAgPX5tvUs/preview', // Episode 9
-        'https://drive.google.com/file/d/13txxe_6UuiN26k2JPcl60W3u04wVGaIy/preview', // Episode 10
-        'https://drive.google.com/file/d/1Yvd_6P_J98s5VKku1KoR9v5QLnh9P8MJ/preview', // Episode 11
-        'https://drive.google.com/file/d/1hbE8TwJk5IGc_a-oGpDY9xpEJSOPRSC0/preview'  // Episode 12
-    ],
-    michsx: [
-        'https://drive.google.com/file/d/10Kuk0u5MI-N9q454IcQWV7nsoKPTA907/preview', // Episode 1
-        'https://drive.google.com/file/d/10_UWhxCbDRWASIfxEfUpxRVBzbK8zljn/preview', // Episode 2
-        'https://drive.google.com/file/d/11PSDRwxMY9brJ2-PiQXNnpHQ6tNnXCrT/preview', // Episode 3
-        'https://drive.google.com/file/d/11m-GoFjQhKcfh8oekb1v5Bz-GyknGwls/preview', // Episode 4
-        'https://drive.google.com/file/d/125tKtgEg1MUclDEqIQT9GvCPY2bVz8Dk/preview', // Episode 5
-        'https://drive.google.com/file/d/12kdphv5nooxqSV9JzoV25msBvhZEmtmx/preview', // Episode 6
-        'https://drive.google.com/file/d/13A2rAYMSKrsNdiM190rqgem19aBngLjH/preview', // Episode 7
-        'https://drive.google.com/file/d/13LV_1KLq5qR5TIPHWYV6qEKWxW7PnUKt/preview', // Episode 8
-        'https://drive.google.com/file/d/13WKVdi_ukwQ3taMtT8-9jyswitc_m3Tk/preview', // Episode 9
-        'https://drive.google.com/file/d/13wW8nbvS8MXwR3Z_otN8y4MpVK2ekoRk/preview', // Episode 10
-        'https://drive.google.com/file/d/1YzHNsvq7THYiBzkzPaG49Uy7_pv7StTp/preview', // Episode 11
-        'https://drive.google.com/file/d/1hd7nbXJtKurgGlj4ThDXtJPJPpn7hRbw/preview'  // Episode 12
-    ],
-    michahhs: [
-        'https://drive.google.com/file/d/10IstP0OWslhov6YTmbZuF344K4aoYeMi/preview', // Episode 1
-        'https://drive.google.com/file/d/10eqdyTfmWxTM85lquSBF3Jj6q71bg8K8/preview', // Episode 2
-        'https://drive.google.com/file/d/11QUUa0vqWUV9E4b1QiQZ8ieX_gsma_wL/preview', // Episode 3
-        'https://drive.google.com/file/d/11sNpx22M9zRhadsvLNmuC9IXIA6NwUE8/preview', // Episode 4
-        'https://drive.google.com/file/d/127C1QeiCcn6L3XTVy_pfPIW6gIXuRTTY/preview', // Episode 5
-        'https://drive.google.com/file/d/12mdT2w0TQhk3mkjyjL-P91al6Xb85kyV/preview', // Episode 6
-        'https://drive.google.com/file/d/13E-MuDzav7rI-7m23nTip5cR1ENUs_Ux/preview', // Episode 7
-        'https://drive.google.com/file/d/13MInrK2LXdt6wCj2N4JX5N1Fxpd6m1Js/preview', // Episode 8
-        'https://drive.google.com/file/d/13YMIPvE197Yn4M5UCmPeg2lVktbjtAAR/preview', // Episode 9
-        'https://drive.google.com/file/d//preview', // Episode 10
-        'https://drive.google.com/file/d/1Z9xtaZvLzOfbzK6esMt5YA1wQHHRdfs6/preview', // Episode 11
-        'https://drive.google.com/file/d/1heZDsqcWupkgO5RvKVJS3nkMOSWc7YxZ/preview'  // Episode 12
-    ],
-    ngabalex: [
-        'https://drive.google.com/file/d/1hcIAEPkpZ6ejakbScxCGlP98IWPbfBqC/preview', // Episode 1
-        'https://drive.google.com/file/d/1htbpV1y0FK6oP2tuxkmzAc2qqaOABV51/preview', // Episode 2
-        'https://drive.google.com/file/d/1jnSAOSIpUyxqQ9JeoHBN9VdZhF-4UNy3/preview', // Episode 3
-        'https://drive.google.com/file/d/ID/preview', // Episode 4
-        'https://drive.google.com/file/d/ID/preview', // Episode 5
-        'https://drive.google.com/file/d/ID/preview', // Episode 6
-        'https://drive.google.com/file/d/ID/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    mecistop: [
-        'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview', // Episode 1
-        'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW/preview', // Episode 2
-        'https://drive.google.com/file/d/1k1ahds6_2f2l6wNpCp0DENu4_m97nEAS/preview', // Episode 3
-        'https://drive.google.com/file/d/ID/preview', // Episode 4
-        'https://drive.google.com/file/d/ID/preview', // Episode 5
-        'https://drive.google.com/file/d/ID/preview', // Episode 6
-        'https://drive.google.com/file/d/ID/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    cece: [
-        'https://drive.google.com/file/d/1hwwG883Sbmj70tInixclN2zCwHLLNeo0/preview', // Episode 1
-        'https://drive.google.com/file/d/1iFHLpTQG9IZBY2VnC5_wHWcBxnQERcXZ/preview', // Episode 2
-        'https://drive.google.com/file/d/ID/preview', // Episode 3
-        'https://drive.google.com/file/d/ID/preview', // Episode 4
-        'https://drive.google.com/file/d/ID/preview', // Episode 5
-        'https://drive.google.com/file/d/ID/preview', // Episode 6
-        'https://drive.google.com/file/d/ID/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    michieer: [
-        'https://drive.google.com/file/d/1hkBAeJUDPmTBdpTctLrNWrfkQOi1QpjK/preview', // Episode 1
-        'https://drive.google.com/file/d/1i3fezqR_KAC1ZElotB33RyvWyo8aLvQE/preview', // Episode 2
-        'https://drive.google.com/file/d/ID/preview', // Episode 3
-        'https://drive.google.com/file/d/ID/preview', // Episode 4
-        'https://drive.google.com/file/d/ID/preview', // Episode 5
-        'https://drive.google.com/file/d/ID/preview', // Episode 6
-        'https://drive.google.com/file/d/ID/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ]
-};
-
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
-
-    function loadEpisode() {
-        const anime = getQueryParam('anime');
-        const episode = getQueryParam('episode');
-
-        if (!anime || !episode) {
-            document.getElementById('videoPlayer').src = "";
-            return;
+    <script>
+        function openAnime(anime) {
+            window.location.href = `episodes.html?anime=${anime}`;
         }
-
-        const episodeIndex = parseInt(episode) - 1;
-        const videoURL = animeEpisodes[anime] ? animeEpisodes[anime][episodeIndex] : null;
-
-        if (videoURL) {
-            document.getElementById('videoPlayer').src = videoURL;
-        }
-
-        document.getElementById('category-name').innerText = `Kategori: ${anime.charAt(0).toUpperCase() + anime.slice(1)}`;
-    }
-
-    function generateEpisodeButtons() {
-        const anime = getQueryParam('anime');
-        const episodeListContainer = document.getElementById('episodeListContainer');
-        
-        if (!anime) return;
-
-        const episodeCount = 12;  // Assuming there are 12 episodes for each anime
-        for (let i = 1; i <= episodeCount; i++) {
-            const button = document.createElement('button');
-            button.innerText = `Episode ${i}`;
-            button.onclick = function() {
-                window.location.href = `player.html?anime=${anime}&episode=${i}`;
-            };
-            episodeListContainer.appendChild(button);
-        }
-    }
-
-    window.onload = function() {
-        loadEpisode();
-        generateEpisodeButtons();
-    };
-</script>
+    </script>
 
 </body>
 </html>
