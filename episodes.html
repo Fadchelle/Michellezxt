@@ -86,7 +86,7 @@
 <body>
 
     <header>
-        <h1>Daftar Episode</h1>
+        <h1>Daftar Episode - Michie Hots</h1>
     </header>
     
     
@@ -103,7 +103,7 @@
         <!-- Daftar episode akan dimuat di sini melalui JavaScript -->
     </div>
 
-<script>
+    <script>
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
@@ -119,30 +119,41 @@
                 return;
             }
 
-            let categoryTitles = {
-                michooy: "Kategori: Michooy",
-                michelles: "Kategori: Michelles",
-                michoooos: "Kategori: Michoooos",
-                michsx: "Kategori: Michsx",
-                michahhs: "Kategori: Michahhs",
-                ngabalex: "Kategori: Ngabalex",
-                mecistop: "Kategori: Mecistop",
-                cece: "Kategori: Cece",
-                michieer: "Kategori: Michieer"
+            let categoryTitle = '';
+            switch (anime) {
+                case 'michooy':
+                    categoryTitle = 'Kategori: Michooy';
+                    break;
+                case 'michelles':
+                    categoryTitle = 'Kategori: Michelles';
+                    break;
+                case 'michoooos':
+                    categoryTitle = 'Kategori: Michoooos';
+                    break;
+                case 'michsx':
+                    categoryTitle = 'Kategori: Michsx';
+                    break;
+                case 'michahhs':
+                    categoryTitle = 'Kategori: Michahhs';
+                    break;
+                default:
+                    categoryTitle = 'Kategori tidak dikenal';
+                    break;
+            }
+            categoryName.innerText = categoryTitle;
+
+            const animeEpisodes = {
+                michooy: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michelles: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michoooos: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michsx: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+                michahhs: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
             };
 
-            if (!categoryTitles[anime]) {
-                categoryName.innerText = "Kategori tidak dikenal";
-                episodeList.innerHTML = "<p>Tidak ada episode untuk kategori ini.</p>";
-                return;
-            }
-
-            categoryName.innerText = categoryTitles[anime];
-
-            const episodes = [];
-            for (let i = 1; i <= 12; i++) {
-                episodes.push(`<div class="episode" onclick="playEpisode('${anime}', ${i})">
-                                   <p>Episode ${i}</p>
+            let episodes = [];
+            for (let i = 0; i < 12; i++) {
+                episodes.push(`<div class="episode" onclick="playEpisode('${anime}', ${i + 1})">
+                                   <p>Episode ${i + 1}</p>
                                </div>`);
             }
 
