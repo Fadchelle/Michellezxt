@@ -4,145 +4,549 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Michie Hots</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #121212; /* Latar belakang hitam */
-            color: white;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        header {
-            background-color: #1f1f1f; /* Darker shade for header */
-            text-align: center;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 40px;
-            color: #00bcd4; /* Warna biru terang untuk judul */
-            letter-spacing: 2px;
-        }
-
-        .anime-list {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            margin-top: 30px;
-        }
-
-        .anime {
-            background-color: #232323; /* Card background */
-            padding: 15px;
-            border-radius: 15px;
-            width: 250px;
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .anime img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        .anime p {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
             color: white;
-            text-transform: uppercase;
+            overflow-x: hidden;
+        }
+
+        /* Header Netflix Style */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e50914;
             letter-spacing: 1px;
         }
 
-        .anime:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-            background-color: #00bcd4; /* Biru pada hover */
+        .header-icons {
+            display: flex;
+            gap: 20px;
         }
 
-        .anime:hover p {
+        .icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 0 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tab {
+            font-size: 16px;
+            color: #ccc;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 10px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: white;
+            border-bottom-color: #e50914;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 120px;
+            padding-bottom: 80px;
+        }
+
+        /* Featured Section */
+        .featured-section {
+            position: relative;
+            height: 60vh;
+            background: linear-gradient(45deg, #141414, #2d1b2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .featured-content {
+            text-align: center;
+            z-index: 2;
+            animation: fadeInUp 1s ease;
+        }
+
+        .featured-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #e50914, #00bcd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .featured-subtitle {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .play-button {
+            background: linear-gradient(45deg, #e50914, #ff6b6b);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(229, 9, 20, 0.4);
+        }
+
+        /* Content Sections */
+        .content-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 0 20px;
             color: white;
         }
 
-        /* Style untuk scrollbar pada bagian daftar anime */
-        .anime-list::-webkit-scrollbar {
-            height: 8px;
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 0 20px;
         }
 
-        .anime-list::-webkit-scrollbar-thumb {
-            background: #00bcd4; /* Warna biru pada scrollbar */
-            border-radius: 10px;
+        .anime-card {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            aspect-ratio: 3/4;
         }
 
-        .anime-list::-webkit-scrollbar-track {
-            background: #121212; /* Track scrollbar berwarna hitam */
+        .anime-card:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .anime-card:hover img {
+            filter: brightness(1.2);
+        }
+
+        .anime-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 20px 10px 10px;
+        }
+
+        .anime-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: white;
+        }
+
+        /* Horizontal Scroll for Mobile */
+        @media (max-width: 768px) {
+            .anime-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 15px;
+                scroll-snap-type: x mandatory;
+                padding: 0 20px;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .anime-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .anime-card {
+                min-width: 130px;
+                scroll-snap-align: start;
+            }
+
+            .featured-title {
+                font-size: 28px;
+            }
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-top: 1px solid #333;
+        }
+
+        .bottom-nav-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #e50914;
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top-color: #e50914;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>Michie Hots</h1>
-    </header>
-
-
-    <div class="anime-list">
-        <div class="anime" onclick="openAnime('michooy')">
-            <img src="https://files.catbox.moe/dnyaor.jpg" alt="Michooy">
-            <p>Michooy</p>
-        </div>
-        <div class="anime" onclick="openAnime('michelles')">
-            <img src="https://files.catbox.moe/ibj4a2.jpg" alt="Michelles">
-            <p>Michelles</p>
-        </div>
-        <div class="anime" onclick="openAnime('michoooos')">
-            <img src="https://files.catbox.moe/m2hd2v.jpeg" alt="Michoooos">
-            <p>Michoooos</p>
-        </div>
-        <div class="anime" onclick="openAnime('michsx')">
-            <img src="https://files.catbox.moe/4tjwfo.jpeg" alt="Michsx">
-            <p>Michsx</p>
-        </div>
-        <div class="anime" onclick="openAnime('michahhs')">
-            <img src="https://files.catbox.moe/fgynpk.jpeg" alt="Michahhs">
-            <p>Michahhs</p>
-        </div>
-        <div class="anime" onclick="openAnime('ngabalex')">
-            <img src="https://files.catbox.moe/x0u6wh.jpg" alt="Ngabalex">
-            <p>Ngabalex</p>
-        </div>
-        <div class="anime" onclick="openAnime('mecistop')">
-            <img src="https://files.catbox.moe/jrtpe5.jpg" alt="Mecistop">
-            <p>Mecistop</p>
-        </div>
-        <div class="anime" onclick="openAnime('cece')">
-            <img src="https://files.catbox.moe/u7sd04.jpg" alt="Cece">
-            <p>Cece</p>
-        </div>
-        <div class="anime" onclick="openAnime('michieer')">
-            <img src="https://files.catbox.moe/yua9ji.jpg" alt="Michieer">
-            <p>Michieer</p>
+    <!-- Header -->
+    <div class="header" id="header">
+        <div class="header-content">
+            <div class="logo">MICHIE HOTS</div>
+            <div class="header-icons">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+            </div>
         </div>
     </div>
-    
+
+    <!-- Navigation -->
+    <div class="nav">
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="home">Beranda</div>
+            <div class="nav-tab" data-tab="trending">Trending</div>
+            <div class="nav-tab" data-tab="new">Terbaru</div>
+            <div class="nav-tab" data-tab="favorites">Favorit</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Featured Section -->
+        <div class="featured-section">
+            <div class="featured-content">
+                <h1 class="featured-title">Selamat Datang</h1>
+                <p class="featured-subtitle">Temukan koleksi terbaik dari Michie Hots</p>
+                <button class="play-button" onclick="scrollToContent()">
+                    ▶ Mulai Menonton
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content-section">
+            <h2 class="section-title">Koleksi Utama</h2>
+            <div class="anime-grid" id="mainGrid">
+                <div class="anime-card fade-in" onclick="openAnime('michooy')" style="animation-delay: 0.1s">
+                    <img src="https://files.catbox.moe/dnyaor.jpg" alt="Michooy">
+                    <div class="anime-info">
+                        <div class="anime-title">Michooy</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('michelles')" style="animation-delay: 0.2s">
+                    <img src="https://files.catbox.moe/ibj4a2.jpg" alt="Michelles">
+                    <div class="anime-info">
+                        <div class="anime-title">Michelles</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('michoooos')" style="animation-delay: 0.3s">
+                    <img src="https://files.catbox.moe/m2hd2v.jpeg" alt="Michoooos">
+                    <div class="anime-info">
+                        <div class="anime-title">Michoooos</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('michsx')" style="animation-delay: 0.4s">
+                    <img src="https://files.catbox.moe/4tjwfo.jpeg" alt="Michsx">
+                    <div class="anime-info">
+                        <div class="anime-title">Michsx</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('michahhs')" style="animation-delay: 0.5s">
+                    <img src="https://files.catbox.moe/fgynpk.jpeg" alt="Michahhs">
+                    <div class="anime-info">
+                        <div class="anime-title">Michahhs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">Koleksi Spesial</h2>
+            <div class="anime-grid">
+                <div class="anime-card fade-in" onclick="openAnime('ngabalex')" style="animation-delay: 0.6s">
+                    <img src="https://files.catbox.moe/x0u6wh.jpg" alt="Ngabalex">
+                    <div class="anime-info">
+                        <div class="anime-title">Ngabalex</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('mecistop')" style="animation-delay: 0.7s">
+                    <img src="https://files.catbox.moe/jrtpe5.jpg" alt="Mecistop">
+                    <div class="anime-info">
+                        <div class="anime-title">Mecistop</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('cece')" style="animation-delay: 0.8s">
+                    <img src="https://files.catbox.moe/u7sd04.jpg" alt="Cece">
+                    <div class="anime-info">
+                        <div class="anime-title">Cece</div>
+                    </div>
+                </div>
+                <div class="anime-card fade-in" onclick="openAnime('michieer')" style="animation-delay: 0.9s">
+                    <img src="https://files.catbox.moe/yua9ji.jpg" alt="Michieer">
+                    <div class="anime-info">
+                        <div class="anime-title">Michieer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-content">
+            <div class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span>Beranda</span>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <span>Cari</span>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                <span>Daftar</span>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+                <span>Profil</span>
+            </div>
+        </div>
+    </div>
 
     <script>
-        function openAnime(anime) {
-            window.location.href = `episodes.html?anime=${anime}`;
-        }
-    </script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Bottom navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Smooth scroll to content
+        function scrollToContent() {
+            document.querySelector('.content-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // Open anime function
+        function openAnime(anime) {
+            // Add loading animation
+            const cards = document.querySelectorAll('.anime-card');
+            cards.forEach(card => {
+                if (card.onclick.toString().includes(anime)) {
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        window.location.href = `episodes.html?anime=${anime}`;
+                    }, 200);
+                }
+            });
+        }
+
+        // Add touch gestures for mobile
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!startX || !startY) return;
+
+            const xDiff = startX - e.touches[0].clientX;
+            const yDiff = startY - e.touches[0].clientY;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                // Horizontal swipe
+                const grids = document.querySelectorAll('.anime-grid');
+                grids.forEach(grid => {
+                    if (xDiff > 0) {
+                        grid.scrollLeft += 50; // Swipe left
+                    } else {
+                        grid.scrollLeft -= 50; // Swipe right
+                    }
+                });
+            }
+
+            startX = null;
+            startY = null;
+        });
+
+        // Lazy loading for images
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.classList.add('loaded');
+                    observer.unobserve(img);
+                }
+            });
+        });
+
+        document.querySelectorAll('.anime-card img').forEach(img => {
+            imageObserver.observe(img);
+        });
+    </script>
 </body>
 </html>
