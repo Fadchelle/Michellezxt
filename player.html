@@ -3,286 +3,564 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player - Michie Hots</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Michie Hots - Netflix Style</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #121212;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #fff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        header {
-            background-color: #1f1f1f;
-            padding: 20px;
+        /* Header */
+        .header {
+            position: relative;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 15px 20px;
+            z-index: 100;
         }
 
-        h1 {
-            margin: 0;
-            color: #E50914;
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .category-name {
-            font-size: 20px;
-            color: #E50914;
-            margin-top: 10px;
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #fff;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #e50914, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #e50914, #ff6b6b);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Video Container */
+        .video-section {
+            position: relative;
+            margin: 0 15px 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            background: #000;
         }
 
         .video-container {
-            width: 80%;
-            max-width: 800px;
-            margin: auto;
-            background-color: #000;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        iframe {
+            position: relative;
             width: 100%;
-            height: 450px;
-            border-radius: 10px;
+            height: 220px;
+            background: #000;
         }
 
-        .episode-list {
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* Category Info */
+        .category-info {
+            margin: 0 20px 25px;
+            text-align: center;
+        }
+
+        .category-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .category-subtitle {
+            font-size: 16px;
+            color: #b0b0b0;
+            font-weight: 400;
+        }
+
+        /* Episodes Section */
+        .episodes-section {
+            padding: 0 20px 30px;
+        }
+
+        .section-header {
             display: flex;
-            justify-content: start;
-            margin-top: 20px;
-            flex-wrap: nowrap;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 10px;
-            margin-bottom: 20px;
-            white-space: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
         }
 
-        .episode-list button {
-            background-color: #222;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .episodes-count {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .episode-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            flex-shrink: 0;
-            width: 100px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .episode-list button:hover {
-            background-color: #00bcd4;
+        .episode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(229,9,20,0.1), transparent);
+            transition: left 0.5s ease;
         }
 
-        .episode-list button:focus {
-            outline: none;
+        .episode-card:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(229,9,20,0.15) 0%, rgba(255,107,107,0.1) 100%);
+            border-color: rgba(229,9,20,0.3);
+            box-shadow: 0 8px 25px rgba(229,9,20,0.2);
         }
 
-        .episode-list button:active {
-            background-color: #4682B4;
+        .episode-card:hover::before {
+            left: 100%;
+        }
+
+        .episode-card:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .episode-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .episode-title {
+            font-size: 12px;
+            color: #b0b0b0;
+            font-weight: 400;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            fill: #e50914;
+        }
+
+        .episode-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        /* Current Episode Indicator */
+        .episode-card.current {
+            background: linear-gradient(135deg, rgba(229,9,20,0.2) 0%, rgba(255,107,107,0.15) 100%);
+            border-color: #e50914;
+            box-shadow: 0 0 20px rgba(229,9,20,0.3);
+        }
+
+        .episode-card.current .episode-number {
+            color: #e50914;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 220px;
+            font-size: 16px;
+            color: #888;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(229,9,20,0.3);
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .episodes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+            
+            .video-container {
+                height: 200px;
+            }
+            
+            .category-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Smooth Transitions */
+        * {
+            transition: color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Error Message */
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: #ff6b6b;
+            font-size: 14px;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(229,9,20,0.8) 0%, rgba(255,107,107,0.6) 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(229,9,20,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .nav-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Episode unavailable indicator */
+        .episode-card.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .episode-card.unavailable:hover {
+            transform: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border-color: rgba(255,255,255,0.1);
+            box-shadow: none;
+        }
+
+        .episode-card.unavailable .episode-title::after {
+            content: ' (Not Available)';
+            color: #ff6b6b;
+        }
+        
+        /* Series selector */
+        .series-selector {
+            margin: 0 20px 20px;
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #e50914 transparent;
+        }
+
+        .series-selector::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .series-selector::-webkit-scrollbar-thumb {
+            background: #e50914;
+            border-radius: 3px;
+        }
+
+        .series-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .series-btn:hover {
+            background: rgba(229,9,20,0.2);
+            border-color: rgba(229,9,20,0.5);
+        }
+
+        .series-btn.active {
+            background: linear-gradient(45deg, #e50914, #ff6b6b);
+            box-shadow: 0 4px 15px rgba(229,9,20,0.3);
+            font-weight: 600;
+        }
+        
+        /* Video info */
+        .video-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .episode-info {
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+        
+        .episode-info strong {
+            color: #fff;
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="back-btn" onclick="goBack()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+            </button>
+            <div class="logo">MICHIE HOTS</div>
+            <div class="profile-btn">MH</div>
+        </div>
+    </header>
+    <!-- Series Selector -->
+    <div class="series-selector" id="seriesSelector">
+        <!-- Series buttons will be generated here -->
+    </div>
 
-<header>
-    <h1>Michie Hots</h1>
-</header>
+    <!-- Video Section -->
+    <div class="video-section">
+        <div class="video-container" id="videoContainer">
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                Loading...
+            </div>
+            <iframe id="videoPlayer" src="" allow="autoplay" allowfullscreen style="display: none;"></iframe>
+        </div>
+    </div>
+    
+    <!-- Video Info -->
+    <div class="video-info">
+        <div class="episode-info">
+            Now playing: <strong id="currentEpisodeTitle">Episode 1</strong>
+        </div>
+    </div>
 
-<a href="episodes.html" class="back-button" style="position: absolute; top: 10px; left: 0px; width: 45px; height: 45px;">
-    <img src="https://files.catbox.moe/3l8h8d.png" alt="Kembali" style="width: 100%; height: 100%;">
-</a>
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" onclick="previousEpisode()">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextEpisode()">Next →</button>
+    </div>
 
+    <!-- Category Info -->
+    <div class="category-info">
+        <h1 class="category-title" id="categoryTitle">Loading...</h1>
+        <p class="category-subtitle">Premium Quality Episodes</p>
+    </div>
 
-<!-- Kategori Anime -->
-<div class="category-name" id="category-name">
-    <!-- Nama kategori akan dimuat di sini melalui JavaScript -->
-</div>
+    <!-- Episodes Section -->
+    <div class="episodes-section">
+        <div class="section-header">
+            <h2 class="section-title">Episodes</h2>
+            <span class="episodes-count" id="episodesCount">Loading...</span>
+        </div>
+        <div class="episodes-grid" id="episodesGrid">
+            <!-- Episodes will be generated here -->
+        </div>
+    </div>
 
-<!-- Video Player -->
-<div class="video-container">
-    <iframe id="videoPlayer" src="" allow="autoplay" allowfullscreen></iframe>
-</div>
-
-<!-- Episode List -->
-<div class="episode-list" id="episodeListContainer">
-    <!-- Episode buttons will be generated by JavaScript -->
-</div>
-
-<script>
-    const animeEpisodes = {
-    michooy: [
-        'https://drive.google.com/file/d/1-g8sxy5Jyec6uxkJL4hh1zvyJWKye2ok/preview', // Episode 1
-        'https://drive.google.com/file/d/1-zdY2u4GRaGlCLqW5Ii7FD9SJ1SeW6fN/preview', // Episode 2
-        'https://drive.google.com/file/d/10tPGS4z8w3upToRLGwTP9s6nSQVteuCK/preview', // Episode 3
-        'https://drive.google.com/file/d/11Qhhbm8aYvORZgaBxaZIwKcX6O2wBaHx/preview', // Episode 4
-        'https://drive.google.com/file/d/11scHOXHneWwabI1VZPyMDk1TnWqopRO6/preview', // Episode 5
-        'https://drive.google.com/file/d/12BhnXyR21g2Y2c2VT8R-PasQsGymWYuK/preview', // Episode 6
-        'https://drive.google.com/file/d/12qQliLd0qBQvv3Zd9SFmQI1YJLNem2pO/preview', // Episode 7
-        'https://drive.google.com/file/d/13EzdltQcW3KmjL-tQK0MEPbWosyBpmiI/preview', // Episode 8
-        'https://drive.google.com/file/d/13MVnb5oOm55gORrM2sDNnbL4IkoSzmhQ/preview', // Episode 9
-        'https://drive.google.com/file/d/13cbvrv6njgFKyO7wdkWxyNLj_fp87GKO/preview', // Episode 10
-        'https://drive.google.com/file/d/1YbqDWxJp7nKYZAuRSTXkswOO3H3Q9Ha2/preview', // Episode 11
-        'https://drive.google.com/file/d/1h_2JzLg_UlhXp8-7wspUpGnJ733aPCMS/preview'  // Episode 12
-    ],
-    michelles: [
-        'https://drive.google.com/file/d/1-ujrALAERXIeH-JMBmIBRNKvSxzczohd/preview', // Episode 1
-        'https://drive.google.com/file/d/10R8NtBQcr6ZmxlUxxhdjxTZweumni9rG/preview', // Episode 2
-        'https://drive.google.com/file/d/110TX0H4AefpZ35qF3O3nylSIv2CcTdWC/preview', // Episode 3
-        'https://drive.google.com/file/d/11Up8IaqHHT0_ghxTkt2uFxYkismnNI53/preview', // Episode 4
-        'https://drive.google.com/file/d/11vVbM953lSYAnvKGMAkOj0TMae6h00gx/preview', // Episode 5
-        'https://drive.google.com/file/d/12PXNtJsU1CCeiI_t-ksk9qpmJvngTepo/preview', // Episode 6
-        'https://drive.google.com/file/d/12tgT8a5jFSwUcstECZHmO6wiBauoxEVp/preview', // Episode 7
-        'https://drive.google.com/file/d/13F6SEA0q659mIc2JPDSYhr5en45yRqdb/preview', // Episode 8
-        'https://drive.google.com/file/d/13RjGkFD2-GEHc0J5cSgvKPrCJcdD1wK3/preview', // Episode 9
-        'https://drive.google.com/file/d/13fJuQTwNzjMNIfljhHFytaRLMX8DzuL2/preview', // Episode 10
-        'https://drive.google.com/file/d/1YjUI6L6yfAlnNA6PljOSs2YVEGBcbOmO/preview', // Episode 11
-        'https://drive.google.com/file/d/1hazt-8p018FUcS-vHgN8qeunqtYmYXGm/preview'  // Episode 12
-    ],
-    michoooos: [
-        'https://drive.google.com/file/d/1-t1ksFecI2EtvKJDFWrJoSBfPUQuYAMp/preview', // Episode 1
-        'https://drive.google.com/file/d/10V1dw6pQowBJuKyvkR2h_sJTL9r8tvJX/preview', // Episode 2
-        'https://drive.google.com/file/d/11GjPXo1fz4Uch_Lc7zR2s8ao7MLUsaEU/preview', // Episode 3
-        'https://drive.google.com/file/d/11iSb3X5GJGA933MfoPvfzH6OVaaIn7Gc/preview', // Episode 4
-        'https://drive.google.com/file/d/13acGKZe7fpWj92TUM0Pufnx7SyoUzZgv/preview', // Episode 5
-        'https://drive.google.com/file/d/12jIKhqPVIOIzRJSkvPlgjOGRNJrHNFaF/preview', // Episode 6
-        'https://drive.google.com/file/d/12zv0Kqqs2TiA_P5KxpeVlq4P8cTv0UJF/preview', // Episode 7
-        'https://drive.google.com/file/d/13I9Ogy1mSnBPhycaUGQPfFzHChN5aJqS/preview', // Episode 8
-        'https://drive.google.com/file/d/13T5rL4Hb30pnWCpblgjRrUXAgPX5tvUs/preview', // Episode 9
-        'https://drive.google.com/file/d/13txxe_6UuiN26k2JPcl60W3u04wVGaIy/preview', // Episode 10
-        'https://drive.google.com/file/d/1Yvd_6P_J98s5VKku1KoR9v5QLnh9P8MJ/preview', // Episode 11
-        'https://drive.google.com/file/d/1hbE8TwJk5IGc_a-oGpDY9xpEJSOPRSC0/preview'  // Episode 12
-    ],
-    michsx: [
-        'https://drive.google.com/file/d/10Kuk0u5MI-N9q454IcQWV7nsoKPTA907/preview', // Episode 1
-        'https://drive.google.com/file/d/10_UWhxCbDRWASIfxEfUpxRVBzbK8zljn/preview', // Episode 2
-        'https://drive.google.com/file/d/11PSDRwxMY9brJ2-PiQXNnpHQ6tNnXCrT/preview', // Episode 3
-        'https://drive.google.com/file/d/11m-GoFjQhKcfh8oekb1v5Bz-GyknGwls/preview', // Episode 4
-        'https://drive.google.com/file/d/125tKtgEg1MUclDEqIQT9GvCPY2bVz8Dk/preview', // Episode 5
-        'https://drive.google.com/file/d/12kdphv5nooxqSV9JzoV25msBvhZEmtmx/preview', // Episode 6
-        'https://drive.google.com/file/d/13A2rAYMSKrsNdiM190rqgem19aBngLjH/preview', // Episode 7
-        'https://drive.google.com/file/d/13LV_1KLq5qR5TIPHWYV6qEKWxW7PnUKt/preview', // Episode 8
-        'https://drive.google.com/file/d/13WKVdi_ukwQ3taMtT8-9jyswitc_m3Tk/preview', // Episode 9
-        'https://drive.google.com/file/d/13wW8nbvS8MXwR3Z_otN8y4MpVK2ekoRk/preview', // Episode 10
-        'https://drive.google.com/file/d/1YzHNsvq7THYiBzkzPaG49Uy7_pv7StTp/preview', // Episode 11
-        'https://drive.google.com/file/d/1hd7nbXJtKurgGlj4ThDXtJPJPpn7hRbw/preview'  // Episode 12
-    ],
-    michahhs: [
-        'https://drive.google.com/file/d/10IstP0OWslhov6YTmbZuF344K4aoYeMi/preview', // Episode 1
-        'https://drive.google.com/file/d/10eqdyTfmWxTM85lquSBF3Jj6q71bg8K8/preview', // Episode 2
-        'https://drive.google.com/file/d/11QUUa0vqWUV9E4b1QiQZ8ieX_gsma_wL/preview', // Episode 3
-        'https://drive.google.com/file/d/11sNpx22M9zRhadsvLNmuC9IXIA6NwUE8/preview', // Episode 4
-        'https://drive.google.com/file/d/127C1QeiCcn6L3XTVy_pfPIW6gIXuRTTY/preview', // Episode 5
-        'https://drive.google.com/file/d/12mdT2w0TQhk3mkjyjL-P91al6Xb85kyV/preview', // Episode 6
-        'https://drive.google.com/file/d/13E-MuDzav7rI-7m23nTip5cR1ENUs_Ux/preview', // Episode 7
-        'https://drive.google.com/file/d/13MInrK2LXdt6wCj2N4JX5N1Fxpd6m1Js/preview', // Episode 8
-        'https://drive.google.com/file/d/13YMIPvE197Yn4M5UCmPeg2lVktbjtAAR/preview', // Episode 9
-        'https://drive.google.com/file/d//preview', // Episode 10
-        'https://drive.google.com/file/d/1Z9xtaZvLzOfbzK6esMt5YA1wQHHRdfs6/preview', // Episode 11
-        'https://drive.google.com/file/d/1heZDsqcWupkgO5RvKVJS3nkMOSWc7YxZ/preview'  // Episode 12
-    ],
-    ngabalex: [
-        'https://drive.google.com/file/d/1hcIAEPkpZ6ejakbScxCGlP98IWPbfBqC/preview', // Episode 1
-        'https://drive.google.com/file/d/1htbpV1y0FK6oP2tuxkmzAc2qqaOABV51/preview', // Episode 2
-        'https://drive.google.com/file/d/17etKgfl8gjUYvu01s4BbNbLZn4HY94i8/preview', // Episode 3
-        'https://drive.google.com/file/d/18G93K36h36dv0I_j1nIgbY-B3dj0b9lj/preview', // Episode 4
-        'https://drive.google.com/file/d/187_cj39oKmA8wgfo4JGziSllqDZDlnpp/preview', // Episode 5
-        'https://drive.google.com/file/d/17oPcLMS22yVKR5P9NaKzNdYdVVLf1kF6/preview', // Episode 6
-        'https://drive.google.com/file/d/18MdVz6tVDB_NnE8Pp84V6SLtT0cm7qXP/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    mecistop: [
-        'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview', // Episode 1
-        'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW1i3fezqR_KAC1ZElotB33RyvWyo8aLvQE/preview', // Episode 2
-        'https://drive.google.com/file/d/17hl6K7DD2SbnHZ977Jat6UUUv2uYzqo6/preview', // Episode 3
-        'https://drive.google.com/file/d/18ELR1_6qf9gSMp4rfifilhkovCks6vDG/preview', // Episode 4
-        'https://drive.google.com/file/d/17xbYoH4nH7Qarhl83tN2ijL1wVLVCf22/preview', // Episode 5
-        'https://drive.google.com/file/d/18UYUd1fYAzXqOCBN0qnkHK79iAx6rZTZ/preview', // Episode 6
-        'https://drive.google.com/file/d/18M1oOzzEnUsycOzs8OOP2gcN-0EHeNJB/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    cece: [
-        'https://drive.google.com/file/d/1hwwG883Sbmj70tInixclN2zCwHLLNeo0/preview', // Episode 1
-        'https://drive.google.com/file/d/1iFHLpTQG9IZBY2VnC5_wHWcBxnQERcXZ/preview', // Episode 2
-        'https://drive.google.com/file/d/18J6pL0ql7nQod1GxNYpsbtLJvm8s9B_6/preview', // Episode 3
-        'https://drive.google.com/file/d/18DZh7OWwGtHzCJVHgvsnbbAaUX7pxDdK/preview', // Episode 4
-        'https://drive.google.com/file/d/17tLyq05QfFDxWfVu9xRHsCCkbE0iSDQs/preview', // Episode 5
-        'https://drive.google.com/file/d/17n054zdkda18WMhekvPkqjBwK2a15DAc/preview', // Episode 6
-        'https://drive.google.com/file/d/18LCbp3RQyrJOSsb8erDhNkszHpq8LZVf/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ],
-    michieer: [
-        'https://drive.google.com/file/d/1hkBAeJUDPmTBdpTctLrNWrfkQOi1QpjK/preview', // Episode 1
-        'https://drive.google.com/file/d/ID/preview', // Episode 2
-        'https://drive.google.com/file/d/18GkYSLn0V-PLXCQnOsyfsquRDvxiAMZr/preview', // Episode 3
-        'https://drive.google.com/file/d/188FhwWesW1LdgmV08dmMzwXAlZGZSxpX/preview', // Episode 4
-        'https://drive.google.com/file/d/17r2zZPkI0MlL3A7PtsuiTB8kWr_3tie0/preview', // Episode 5
-        'https://drive.google.com/file/d/18Pw7CxJSGnvoOL_KBXJpcsfMVc6G5dLp/preview', // Episode 6
-        'https://drive.google.com/file/d/18Vn8pyuLsRODSaWrkWl1Tg2cu3hgimuV/preview', // Episode 7
-        'https://drive.google.com/file/d/ID/preview', // Episode 8
-        'https://drive.google.com/file/d/ID/preview', // Episode 9
-        'https://drive.google.com/file/d/ID/preview', // Episode 10
-        'https://drive.google.com/file/d/ID/preview', // Episode 11
-        'https://drive.google.com/file/d/ID/preview'  // Episode 12
-    ]
-};
-
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
-
-    function loadEpisode() {
-        const anime = getQueryParam('anime');
-        const episode = getQueryParam('episode');
-
-        if (!anime || !episode) {
-            document.getElementById('videoPlayer').src = "";
-            return;
-        }
-
-        const episodeIndex = parseInt(episode) - 1;
-        const videoURL = animeEpisodes[anime] ? animeEpisodes[anime][episodeIndex] : null;
-
-        if (videoURL) {
-            document.getElementById('videoPlayer').src = videoURL;
-        }
-
-        document.getElementById('category-name').innerText = `Kategori: ${anime.charAt(0).toUpperCase() + anime.slice(1)}`;
-    }
-
-    function generateEpisodeButtons() {
-        const anime = getQueryParam('anime');
-        const episodeListContainer = document.getElementById('episodeListContainer');
-        
-        if (!anime) return;
-
-        const episodeCount = 12;  // Assuming there are 12 episodes for each anime
-        for (let i = 1; i <= episodeCount; i++) {
-            const button = document.createElement('button');
-            button.innerText = `Episode ${i}`;
-            button.onclick = function() {
-                window.location.href = `player.html?anime=${anime}&episode=${i}`;
-            };
-            episodeListContainer.appendChild(button);
-        }
-    }
-
-    window.onload = function() {
-        loadEpisode();
-        generateEpisodeButtons();
-    };
-</script>
-
-</body>
-</html>
+    <script>
+        const animeEpisodes = {
+            michooy: [
+                'https://drive.google.com/file/d/1-g8sxy5Jyec6uxkJL4hh1zvyJWKye2ok/preview',
+                'https://drive.google.com/file/d/1-zdY2u4GRaGlCLqW5Ii7FD9SJ1SeW6fN/preview',
+                'https://drive.google.com/file/d/10tPGS4z8w3upToRLGwTP9s6nSQVteuCK/preview',
+                'https://drive.google.com/file/d/11Qhhbm8aYvORZgaBxaZIwKcX6O2wBaHx/preview',
+                'https://drive.google.com/file/d/11scHOXHneWwabI1VZPyMDk1TnWqopRO6/preview',
+                'https://drive.google.com/file/d/12BhnXyR21g2Y2c2VT8R-PasQsGymWYuK/preview',
+                'https://drive.google.com/file/d/12qQliLd0qBQvv3Zd9SFmQI1YJLNem2pO/preview',
+                'https://drive.google.com/file/d/13EzdltQcW3KmjL-tQK0MEPbWosyBpmiI/preview',
+                'https://drive.google.com/file/d/13MVnb5oOm55gORrM2sDNnbL4IkoSzmhQ/preview',
+                'https://drive.google.com/file/d/13cbvrv6njgFKyO7wdkWxyNLj_fp87GKO/preview',
+                'https://drive.google.com/file/d/1YbqDWxJp7nKYZAuRSTXkswOO3H3Q9Ha2/preview',
+                'https://drive.google.com/file/d/1h_2JzLg_UlhXp8-7wspUpGnJ733aPCMS/preview'
+            ],
+            michelles: [
+                'https://drive.google.com/file/d/1-ujrALAERXIeH-JMBmIBRNKvSxzczohd/preview',
+                'https://drive.google.com/file/d/10R8NtBQcr6ZmxlUxxhdjxTZweumni9rG/preview',
+                'https://drive.google.com/file/d/110TX0H4AefpZ35qF3O3nylSIv2CcTdWC/preview',
+                'https://drive.google.com/file/d/11Up8IaqHHT0_ghxTkt2uFxYkismnNI53/preview',
+                'https://drive.google.com/file/d/11vVbM953lSYAnvKGMAkOj0TMae6h00gx/preview',
+                'https://drive.google.com/file/d/12PXNtJsU1CCeiI_t-ksk9qpmJvngTepo/preview',
+                'https://drive.google.com/file/d/12tgT8a5jFSwUcstECZHmO6wiBauoxEVp/preview',
+                'https://drive.google.com/file/d/13F6SEA0q659mIc2JPDSYhr5en45yRqdb/preview',
+                'https://drive.google.com/file/d/13RjGkFD2-GEHc0J5cSgvKPrCJcdD1wK3/preview',
+                'https://drive.google.com/file/d/13fJuQTwNzjMNIfljhHFytaRLMX8DzuL2/preview',
+                'https://drive.google.com/file/d/1YjUI6L6yfAlnNA6PljOSs2YVEGBcbOmO/preview',
+                'https://drive.google.com/file/d/1hazt-8p018FUcS-vHgN8qeunqtYmYXGm/preview'
+            ],
+            michoooos: [
+                'https://drive.google.com/file/d/1-t1ksFecI2EtvKJDFWrJoSBfPUQuYAMp/preview',
+                'https://drive.google.com/file/d/10V1dw6pQowBJuKyvkR2h_sJTL9r8tvJX/preview',
+                'https://drive.google.com/file/d/11GjPXo1fz4Uch_Lc7zR2s8ao7MLUsaEU/preview',
+                'https://drive.google.com/file/d/11iSb3X5GJGA933MfoPvfzH6OVaaIn7Gc/preview',
+                'https://drive.google.com/file/d/13acGKZe7fpWj92TUM0Pufnx7SyoUzZgv/preview',
+                'https://drive.google.com/file/d/12jIKhqPVIOIzRJSkvPlgjOGRNJrHNFaF/preview',
+                'https://drive.google.com/file/d/12zv0Kqqs2TiA_P5KxpeVlq4P8cTv0UJF/preview',
+                'https://drive.google.com/file/d/13I9Ogy1mSnBPhycaUGQPfFzHChN5aJqS/preview',
+                'https://drive.google.com/file/d/13T5rL4Hb30pnWCpblgjRrUXAgPX5tvUs/preview',
+                'https://drive.google.com/file/d/13txxe_6UuiN26k2JPcl60W3u04wVGaIy/preview',
+                'https://drive.google.com/file/d/1Yvd_6P_J98s5VKku1KoR9v5QLnh9P8MJ/preview',
+                'https://drive.google.com/file/d/1hbE8TwJk5IGc_a-oGpDY9xpEJSOPRSC0/preview'
+            ],
+            michsx: [
+                'https://drive.google.com/file/d/10Kuk0u5MI-N9q454IcQWV7nsoKPTA907/preview',
+                'https://drive.google.com/file/d/10_UWhxCbDRWASIfxEfUpxRVBzbK8zljn/preview',
+                'https://drive.google.com/file/d/11PSDRwxMY9brJ2-PiQXNnpHQ6tNnXCrT/preview',
+                'https://drive.google.com/file/d/11m-GoFjQhKcfh8oekb1v5Bz-GyknGwls/preview',
+                'https://drive.google.com/file/d/125tKtgEg1MUclDEqIQT9GvCPY2bVz8Dk/preview',
+                'https://drive.google.com/file/d/12kdphv5nooxqSV9JzoV25msBvhZEmtmx/preview',
+                'https://drive.google.com/file/d/13A2rAYMSKrsNdiM190rqgem19aBngLjH/preview',
+                'https://drive.google.com/file/d/13LV_1KLq5qR5TIPHWYV6qEKWxW7PnUKt/preview',
+                'https://drive.google.com/file/d/13WKVdi_ukwQ3taMtT8-9jyswitc_m3Tk/preview',
+                'https://drive.google.com/file/d/13wW8nbvS8MXwR3Z_otN8y4MpVK2ekoRk/preview',
+                'https://drive.google.com/file/d/1YzHNsvq7THYiBzkzPaG49Uy7_pv7StTp/preview',
+                'https://drive.google.com/file/d/1hd7nbXJtKurgGlj4ThDXtJPJPpn7hRbw/preview'
+            ],
+            michahhs: [
+                'https://drive.google.com/file/d/10IstP0OWslhov6YTmbZuF344K4aoYeMi/preview',
+                'https://drive.google.com/file/d/10eqdyTfmWxTM85lquSBF3Jj6q71bg8K8/preview',
+                'https://drive.google.com/file/d/11QUUa0vqWUV9E4b1QiQZ8ieX_gsma_wL/preview',
+                'https://drive.google.com/file/d/11sNpx22M9zRhadsvLNmuC9IXIA6NwUE8/preview',
+                'https://drive.google.com/file/d/127C1QeiCcn6L3XTVy_pfPIW6gIXuRTTY/preview',
+                'https://drive.google.com/file/d/12mdT2w0TQhk3mkjyjL-P91al6Xb85kyV/preview',
+                'https://drive.google.com/file/d/13E-MuDzav7rI-7m23nTip5cR1ENUs_Ux/preview',
+                'https://drive.google.com/file/d/13MInrK2LXdt6wCj2N4JX5N1Fxpd6m1Js/preview',
+                'https://drive.google.com/file/d/13YMIPvE197Yn4M5UCmPeg2lVktbjtAAR/preview',
+                '',
+                'https://drive.google.com/file/d/1Z9xtaZvLzOfbzK6esMt5YA1wQHHRdfs6/preview',
+                'https://drive.google.com/file/d/1heZDsqcWupkgO5RvKVJS3nkMOSWc7YxZ/preview'
+            ],
+            ngabalex: [
+                'https://drive.google.com/file/d/1hcIAEPkpZ6ejakbScxCGlP98IWPbfBqC/preview',
+                'https://drive.google.com/file/d/1htbpV1y0FK6oP2tuxkmzAc2qqaOABV51/preview',
+                'https://drive.google.com/file/d/17etKgfl8gjUYvu01s4BbNbLZn4HY94i8/preview',
+                'https://drive.google.com/file/d/18G93K36h36dv0I_j1nIgbY-B3dj0b9lj/preview',
+                'https://drive.google.com/file/d/187_cj39oKmA8wgfo4JGziSllqDZDlnpp/preview',
+                'https://drive.google.com/file/d/17oPcLMS22yVKR5P9NaKzNdYdVVLf1kF6/preview',
+                'https://drive.google.com/file/d/18MdVz6tVDB_NnE8Pp84V6SLtT0cm7qXP/preview'
+            ],
+            mecistop: [
+                'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview',
+                'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW/preview',
+                'https://drive.google.com/file/d/17hl6K7DD2SbnHZ977Jat6UUUv2uYzqo6/preview',
+                'https://drive.google.com/file/d/18ELR1_6qf9gSMp4rfifilhkovCks6vDG/preview',
+                'https://drive.google.com/file/d/17xbYoH4nH7Qarhl8
