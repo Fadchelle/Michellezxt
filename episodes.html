@@ -561,7 +561,7 @@
             card.style.transform = 'scale(0.98)';
             setTimeout(() => {
                 card.style.transform = '';
-                window.location.href = `player.html?anime=${seriesId}&episode=${episode}`;
+                window.location.href = `player.html?series=${seriesId}&episode=${episode - 1}`;
             }, 150);
         }
 
