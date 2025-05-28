@@ -559,8 +559,243 @@
                 'https://drive.google.com/file/d/18MdVz6tVDB_NnE8Pp84V6SLtT0cm7qXP/preview'
             ],
             mecistop: [
-                'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview',
+                    'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview',
                 'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW/preview',
                 'https://drive.google.com/file/d/17hl6K7DD2SbnHZ977Jat6UUUv2uYzqo6/preview',
                 'https://drive.google.com/file/d/18ELR1_6qf9gSMp4rfifilhkovCks6vDG/preview',
-                'https://drive.google.com/file/d/17xbYoH4nH7Qarhl8
+                'https://drive.google.com/file/d/17xbYoH4nH7Qarhl83tN2ijL1wVLVCf22/preview',
+                'https://drive.google.com/file/d/18UYUd1fYAzXqOCBN0qnkHK79iAx6rZTZ/preview',
+                'https://drive.google.com/file/d/18M1oOzzEnUsycOzs8OOP2gcN-0EHeNJB/preview'
+            ],
+            cece: [
+                'https://drive.google.com/file/d/1hwwG883Sbmj70tInixclN2zCwHLLNeo0/preview',
+                'https://drive.google.com/file/d/1iFHLpTQG9IZBY2VnC5_wHWcBxnQERcXZ/preview',
+                'https://drive.google.com/file/d/18J6pL0ql7nQod1GxNYpsbtLJvm8s9B_6/preview',
+                'https://drive.google.com/file/d/18DZh7OWwGtHzCJVHgvsnbbAaUX7pxDdK/preview',
+                'https://drive.google.com/file/d/17tLyq05QfFDxWfVu9xRHsCCkbE0iSDQs/preview',
+                'https://drive.google.com/file/d/17n054zdkda18WMhekvPkqjBwK2a15DAc/preview',
+                'https://drive.google.com/file/d/18LCbp3RQyrJOSsb8erDhNkszHpq8LZVf/preview'
+            ],
+            michieer: [
+                'https://drive.google.com/file/d/1hkBAeJUDPmTBdpTctLrNWrfkQOi1QpjK/preview',
+                '',
+                'https://drive.google.com/file/d/18GkYSLn0V-PLXCQnOsyfsquRDvxiAMZr/preview',
+                'https://drive.google.com/file/d/188FhwWesW1LdgmV08dmMzwXAlZGZSxpX/preview',
+                'https://drive.google.com/file/d/17r2zZPkI0MlL3A7PtsuiTB8kWr_3tie0/preview',
+                'https://drive.google.com/file/d/18Pw7CxJSGnvoOL_KBXJpcsfMVc6G5dLp/preview',
+                'https://drive.google.com/file/d/18Vn8pyuLsRODSaWrkWl1Tg2cu3hgimuV/preview'
+            ]
+        };
+
+        const animeNames = {
+            michooy: 'Michooy',
+            michelles: 'Michelles',
+            michoooos: 'Michoooos',
+            michsx: 'Michsx',
+            michahhs: 'Michahhs',
+            ngabalex: 'Ngabalex',
+            mecistop: 'Mecistop',
+            cece: 'Cece',
+            michieer: 'Michieer'
+        };
+
+        let currentSeries = '';
+        let currentEpisodeIndex = 0;
+        
+        function init() {
+            // Set default series to first one if not in URL
+            const params = new URLSearchParams(window.location.search);
+            const seriesParam = params.get('series');
+            
+            if (seriesParam && animeEpisodes[seriesParam]) {
+                currentSeries = seriesParam;
+            } else {
+                currentSeries = Object.keys(animeEpisodes)[0];
+            }
+            
+            // Generate series selector
+            generateSeriesSelector();
+            
+            // Load series
+            loadSeries(currentSeries);
+            
+            // Try to load last played episode
+            const episodeParam = params.get('episode');
+const lastEpisode = localStorage.getItem(`lastEpisode_${currentSeries}`);
+
+if (episodeParam !== null && !isNaN(episodeParam)) {
+    currentEpisodeIndex = parseInt(episodeParam);
+    loadEpisode(currentEpisodeIndex);
+} else if (lastEpisode !== null) {
+    currentEpisodeIndex = parseInt(lastEpisode);
+    loadEpisode(currentEpisodeIndex);
+} else {
+    loadEpisode(0);
+}
+        }
+        
+        function generateSeriesSelector() {
+            const container = document.getElementById('seriesSelector');
+            container.innerHTML = '';
+            
+            Object.keys(animeEpisodes).forEach(seriesKey => {
+                const btn = document.createElement('button');
+                btn.className = 'series-btn';
+                btn.textContent = animeNames[seriesKey];
+                if (seriesKey === currentSeries) {
+                    btn.classList.add('active');
+                }
+                
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.series-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    // Change series
+                    currentSeries = seriesKey;
+                    currentEpisodeIndex = 0;
+                    
+                    // Update URL
+                    const url = new URL(window.location);
+                    url.searchParams.set('series', seriesKey);
+                    window.history.pushState({}, '', url);
+                    
+                    // Load new series
+                    loadSeries(seriesKey);
+                    loadEpisode(0);
+                });
+                
+                container.appendChild(btn);
+            });
+        }
+        
+        function loadSeries(seriesKey) {
+            document.getElementById('categoryTitle').textContent = animeNames[seriesKey];
+            document.getElementById('episodesCount').textContent = `${animeEpisodes[seriesKey].length} Episodes`;
+            
+            generateEpisodeCards(seriesKey);
+            updateNavigationButtons();
+        }
+        
+        function generateEpisodeCards(seriesKey) {
+            const container = document.getElementById('episodesGrid');
+            container.innerHTML = '';
+            
+            animeEpisodes[seriesKey].forEach((episode, index) => {
+                const card = document.createElement('div');
+                card.className = 'episode-card';
+                if (index === currentEpisodeIndex) {
+                    card.classList.add('current');
+                }
+                if (!episode) {
+                    card.classList.add('unavailable');
+                }
+                
+                card.innerHTML = `
+                    <div class="episode-number">Episode ${index + 1}</div>
+                    <div class="episode-title">${episode ? 'Available' : 'Coming Soon'}</div>
+                    <svg class="play-icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                `;
+                
+                if (episode) {
+                    card.addEventListener('click', () => {
+                        currentEpisodeIndex = index;
+                        loadEpisode(index);
+                        updateEpisodeCards();
+                        updateNavigationButtons();
+                    });
+                }
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function loadEpisode(index) {
+            const episodes = animeEpisodes[currentSeries];
+            if (index < 0 || index >= episodes.length || !episodes[index]) {
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem(`lastEpisode_${currentSeries}`, index);
+            
+            // Update UI
+            document.getElementById('loadingIndicator').style.display = 'flex';
+            document.getElementById('videoPlayer').style.display = 'none';
+            document.getElementById('currentEpisodeTitle').textContent = `Episode ${index + 1}`;
+            
+            // Set the video source
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.src = episodes[index];
+            
+            // Show video when loaded
+            videoPlayer.onload = () => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                videoPlayer.style.display = 'block';
+            };
+            
+            // Update episode cards
+            updateEpisodeCards();
+            updateNavigationButtons();
+        }
+        
+        function updateEpisodeCards() {
+            const cards = document.querySelectorAll('.episode-card');
+            cards.forEach((card, index) => {
+                card.classList.remove('current');
+                if (index === currentEpisodeIndex) {
+                    card.classList.add('current');
+                }
+            });
+        }
+        
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentEpisodeIndex === 0;
+            nextBtn.disabled = currentEpisodeIndex === animeEpisodes[currentSeries].length - 1;
+        }
+        
+        function previousEpisode() {
+            if (currentEpisodeIndex > 0) {
+                currentEpisodeIndex--;
+                loadEpisode(currentEpisodeIndex);
+            }
+        }
+        
+        function nextEpisode() {
+            if (currentEpisodeIndex < animeEpisodes[currentSeries].length - 1) {
+                currentEpisodeIndex++;
+                loadEpisode(currentEpisodeIndex);
+            }
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const seriesParam = params.get('series');
+            
+            if (seriesParam && animeEpisodes[seriesParam] && seriesParam !== currentSeries) {
+                currentSeries = seriesParam;
+                currentEpisodeIndex = 0;
+                loadSeries(currentSeries);
+                loadEpisode(0);
+            }
+        });
+    </script>
+</body>
+</html>            
