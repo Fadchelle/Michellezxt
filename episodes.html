@@ -533,55 +533,61 @@
             'https://files.catbox.moe/f8mpa5.jpg',
         ];
 
-        function loadEpisodes() {
-            const seriesId = getQueryParam('anime');
-            const seriesTitle = document.getElementById('series-title');
-            const episodesGrid = document.getElementById('episodes-grid');
-            const episodeCount = document.getElementById('episode-count');
+        async function loadEpisodes() {
+    const seriesId = getQueryParam('anime');
+    const seriesTitle = document.getElementById('series-title');
+    const episodesGrid = document.getElementById('episodes-grid');
+    const episodeCount = document.getElementById('episode-count');
 
-            if (!seriesId || !categoryData[seriesId]) {
-                episodesGrid.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.7);">
-                        <h3>Series not found</h3>
-                        <p>Please check the URL and try again.</p>
-                    </div>
-                `;
-                return;
-            }
+    if (!seriesId || !categoryData[seriesId]) {
+        episodesGrid.innerHTML = `<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.7);">
+            <h3>Series not found</h3><p>Please check the URL and try again.</p></div>`;
+        return;
+    }
 
-            const series = categoryData[seriesId];
-            seriesTitle.textContent = series.title;
-            episodeCount.textContent = series.episodes;
+    const series = categoryData[seriesId];
+    seriesTitle.textContent = series.title;
 
-            // Generate episodes
-            const episodes = [];
-            for (let i = 1; i <= series.episodes; i++) {
-                const duration = Math.floor(Math.random() * 20) + 25; // 25-45 minutes
-                episodes.push(`
-                    <div class="episode-card" onclick="playEpisode('${seriesId}', ${i})">
-                        <div class="episode-thumbnail" style="background-image: url('${thumbnails[i-1]}');">
-                            <div class="episode-number-overlay">${i}</div>
-                            <div class="play-button">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="episode-info">
-                            <div class="episode-number">Episode ${i}</div>
-                            <div class="episode-title">${series.title} - Part ${i}</div>
-                            <div class="episode-duration">${duration} min</div>
-                            <div class="episode-description">${episodeDescriptions[i-1]}</div>
+    try {
+        const res = await fetch('player.html');
+        const html = await res.text();
+        const match = html.match(/const\s+animeEpisodes\s*=\s*({[\s\S]*?});/);
+        if (!match) throw new Error('animeEpisodes not found');
+
+        const animeEpisodes = new Function(`return ${match[1]}`)();
+        const episodesList = animeEpisodes[seriesId] || [];
+        const validEpisodes = episodesList.filter(url => url && url.includes('drive.google.com'));
+        const count = validEpisodes.length;
+        episodeCount.textContent = count;
+
+        const episodes = [];
+        for (let i = 1; i <= count; i++) {
+            const duration = Math.floor(Math.random() * 20) + 25;
+            episodes.push(`
+                <div class="episode-card" onclick="playEpisode('${seriesId}', ${i})">
+                    <div class="episode-thumbnail" style="background-image: url('${thumbnails[i - 1]}');">
+                        <div class="episode-number-overlay">${i}</div>
+                        <div class="play-button">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
                     </div>
-                `);
-            }
-
-            // Simulate loading
-            setTimeout(() => {
-                episodesGrid.innerHTML = episodes.join('');
-            }, 500);
+                    <div class="episode-info">
+                        <div class="episode-number">Episode ${i}</div>
+                        <div class="episode-title">${series.title} - Part ${i}</div>
+                        <div class="episode-duration">${duration} min</div>
+                        <div class="episode-description">${episodeDescriptions[i - 1]}</div>
+                    </div>
+                </div>
+            `);
         }
+
+        setTimeout(() => {
+            episodesGrid.innerHTML = episodes.join('');
+        }, 500);
+    } catch (err) {
+        episodesGrid.innerHTML = `<div style="color:red; padding:20px;">Gagal ambil episode: ${err.message}</div>`;
+    }
+}
 
         function playEpisode(seriesId, episode) {
             // Add a subtle feedback animation
