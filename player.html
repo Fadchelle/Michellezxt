@@ -3,869 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michie Hots - Netflix Style</title>
+    <title>Player - Michie Hots</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        :root { --bg: #0a0a0a; --bg-sec: #141414; --red: #E50914; --gray: #aaa; --sidebar-w: 75px; --sidebar-expanded-w: 240px; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
 
-        body {
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-            color: #fff;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        /* --- SIDEBAR PC --- */
+        .sidebar { display: none; width: var(--sidebar-w); background: #000; flex-direction: column; padding: 25px 0; border-right: 1px solid #222; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; z-index: 100;}
+        .sidebar.expanded { width: var(--sidebar-expanded-w); }
+        .menu-toggle { color: #fff; cursor: pointer; margin: 0 25px 40px 25px; transition: 0.2s; display: inline-flex; }
+        .menu-toggle:hover { color: var(--red); }
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 0 15px; }
+        .nav-link { display: flex; align-items: center; color: var(--gray); font-size: 1.05rem; padding: 12px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .nav-link:hover { background: #222; color: #fff; }
+        .nav-icon { min-width: 25px; display: flex; justify-content: center; align-items: center; }
+        .nav-text { margin-left: 15px; font-weight: 500; opacity: 0; transition: opacity 0.2s; display: none; }
+        .sidebar.expanded .nav-text { display: block; opacity: 1; }
 
-        /* Header */
-        .header {
-            position: relative;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            padding: 15px 20px;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.05);
-        }
-
-        .back-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #fff;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(45deg, #e50914, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .profile-btn {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(45deg, #e50914, #ff6b6b);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* Video Container */
-        .video-section {
-            position: relative;
-            margin: 0 15px 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            background: #000;
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 220px;
-            background: #000;
-        }
-
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 12px;
-        }
-
-        .video-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            padding: 20px;
-            z-index: 10;
-        }
-
-        /* Category Info */
-        .category-info {
-            margin: 0 20px 25px;
-            text-align: center;
-        }
-
-        .category-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(45deg, #fff, #e0e0e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .category-subtitle {
-            font-size: 16px;
-            color: #b0b0b0;
-            font-weight: 400;
-        }
-
-        /* Episodes Section */
-        .episodes-section {
-            padding: 0 20px 30px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .episodes-count {
-            font-size: 14px;
-            color: #888;
-        }
-
-        .episodes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .episode-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .episode-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(229,9,20,0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .episode-card:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, rgba(229,9,20,0.15) 0%, rgba(255,107,107,0.1) 100%);
-            border-color: rgba(229,9,20,0.3);
-            box-shadow: 0 8px 25px rgba(229,9,20,0.2);
-        }
-
-        .episode-card:hover::before {
-            left: 100%;
-        }
-
-        .episode-card:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        .episode-number {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-
-        .episode-title {
-            font-size: 12px;
-            color: #b0b0b0;
-            font-weight: 400;
-        }
-
-        .play-icon {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            fill: #e50914;
-        }
-
-        .episode-card:hover .play-icon {
-            opacity: 1;
-        }
-
-        /* Current Episode Indicator */
-        .episode-card.current {
-            background: linear-gradient(135deg, rgba(229,9,20,0.2) 0%, rgba(255,107,107,0.15) 100%);
-            border-color: #e50914;
-            box-shadow: 0 0 20px rgba(229,9,20,0.3);
-        }
-
-        .episode-card.current .episode-number {
-            color: #e50914;
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 220px;
-            font-size: 16px;
-            color: #888;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(229,9,20,0.3);
-            border-top: 3px solid #e50914;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .episodes-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 10px;
-            }
-            
-            .video-container {
-                height: 200px;
-            }
-            
-            .category-title {
-                font-size: 24px;
-            }
-        }
-
-        /* Smooth Transitions */
-        * {
-            transition: color 0.3s ease, background 0.3s ease, transform 0.3s ease;
-        }
-
-        /* Glass Effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Error Message */
-        .error-message {
-            text-align: center;
-            padding: 20px;
-            color: #ff6b6b;
-            font-size: 14px;
-        }
-
-        /* Navigation Buttons */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            flex: 1;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, rgba(229,9,20,0.8) 0%, rgba(255,107,107,0.6) 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(229,9,20,0.3);
-        }
-
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .nav-btn:disabled:hover {
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Episode unavailable indicator */
-        .episode-card.unavailable {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .episode-card.unavailable:hover {
-            transform: none;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-            border-color: rgba(255,255,255,0.1);
-            box-shadow: none;
-        }
-
-        .episode-card.unavailable .episode-title::after {
-            content: ' (Not Available)';
-            color: #ff6b6b;
-        }
+        /* --- AREA UTAMA --- */
+        .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; width: 100%; background: var(--bg-sec);}
+        .main-area::-webkit-scrollbar { display: none; }
         
-        /* Series selector */
-        .series-selector {
-            margin: 0 20px 20px;
-            display: flex;
-            overflow-x: auto;
-            gap: 10px;
-            padding-bottom: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: #e50914 transparent;
-        }
+        .video-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10;}
+        .video-wrapper iframe { width: 100%; height: 100%; border: none; }
+        .btn-back-mobile { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.6); color: #fff; border: 1px solid #333; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px); z-index: 20; transition: 0.2s;}
+        .btn-back-mobile:hover { background: var(--red); border-color: var(--red);}
 
-        .series-selector::-webkit-scrollbar {
-            height: 6px;
-        }
+        /* --- KONTEN BAWAH VIDEO --- */
+        .content-area { padding: 25px 20px; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%;}
+        .v-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; color: #fff; letter-spacing: 0.5px;}
+        .v-ep { color: var(--gray); font-weight: 600; margin-bottom: 25px; font-size: 1rem; display: flex; align-items: center; gap: 10px;}
+        .v-badge { background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;}
 
-        .series-selector::-webkit-scrollbar-thumb {
-            background: #e50914;
-            border-radius: 3px;
-        }
+        .tabs { display: flex; gap: 30px; border-bottom: 1px solid #333; margin-bottom: 25px; }
+        .tab { padding: 10px 0; color: #777; font-weight: bold; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; font-size: 1.05rem;}
+        .tab.active { color: #fff; border-bottom-color: var(--red); }
+        .tab:hover { color: #ddd; }
 
-        .series-btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            font-size: 14px;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-
-        .series-btn:hover {
-            background: rgba(229,9,20,0.2);
-            border-color: rgba(229,9,20,0.5);
-        }
-
-        .series-btn.active {
-            background: linear-gradient(45deg, #e50914, #ff6b6b);
-            box-shadow: 0 4px 15px rgba(229,9,20,0.3);
-            font-weight: 600;
-        }
+        /* --- LIST EPISODE --- */
+        .grid-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .box-card { display: flex; background: #1a1a1a; border-radius: 8px; cursor: pointer; overflow: hidden; border: 1px solid transparent; transition: 0.2s; align-items: center;}
+        .box-card:hover { background: #222; border-color: #555; transform: translateY(-2px);}
+        .box-card.active { border-color: var(--red); background: rgba(229,9,20,0.1); }
         
-        /* Video info */
-        .video-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-        }
-        
-        .episode-info {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-        
-        .episode-info strong {
-            color: #fff;
+        .box-num { width: 50px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.4rem; color: #555; }
+        .box-card.active .box-num { color: var(--red); }
+        .box-info { padding: 15px 15px 15px 0; flex: 1; }
+        .box-title { font-weight: 700; margin-bottom: 4px; font-size: 1.05rem;}
+        .box-card.active .box-title { color: #fff; }
+        .box-play-icon { color: var(--red); display: flex; align-items: center; padding-right: 20px;}
+
+        /* --- GRID SERIES LAIN --- */
+        .series-grid { display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+        .s-card { aspect-ratio: 2/3; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; transition: 0.3s; border: 1px solid transparent;}
+        .s-card:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        .s-card img { width: 100%; height: 100%; object-fit: cover; }
+        .s-card-name { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 15px 5px 10px; text-align: center; font-size: 0.85rem; font-weight: bold; }
+
+        @media (min-width: 768px) {
+            .sidebar { display: flex; }
+            .btn-back-mobile { display: none; }
+            .video-wrapper { max-height: 75vh; }
+            .content-area { padding: 40px; }
+            .v-title { font-size: 2.5rem; }
+            .grid-list { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+            .series-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;}
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <button class="back-btn" onclick="goBack()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                </svg>
-            </button>
-            <div class="logo">MICHIE HOTS</div>
-            <div class="profile-btn">MH</div>
-        </div>
-    </header>
-    <!-- Series Selector -->
-    <div class="series-selector" id="seriesSelector">
-        <!-- Series buttons will be generated here -->
-    </div>
-
-    <!-- Video Section -->
-    <div class="video-section">
-        <div class="video-container" id="videoContainer">
-            <div class="loading" id="loadingIndicator">
-                <div class="spinner"></div>
-                Loading...
-            </div>
-            <iframe id="videoPlayer" src="" allow="autoplay" allowfullscreen style="display: none;"></iframe>
-        </div>
-    </div>
     
-    <!-- Video Info -->
-    <div class="video-info">
-        <div class="episode-info">
-            Now playing: <strong id="currentEpisodeTitle">Episode 1</strong>
+    <nav class="sidebar" id="sidebar">
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </div>
-    </div>
-
-    <!-- Navigation Buttons -->
-    <div class="nav-buttons">
-        <button class="nav-btn" id="prevBtn" onclick="previousEpisode()">← Previous</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextEpisode()">Next →</button>
-    </div>
-
-    <!-- Category Info -->
-    <div class="category-info">
-        <h1 class="category-title" id="categoryTitle">Loading...</h1>
-        <p class="category-subtitle">Premium Quality Episodes</p>
-    </div>
-
-    <!-- Episodes Section -->
-    <div class="episodes-section">
-        <div class="section-header">
-            <h2 class="section-title">Episodes</h2>
-            <span class="episodes-count" id="episodesCount">Loading...</span>
+        <div class="nav-menu">
+            <div class="nav-link" onclick="location.href='index.html'">
+                <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+                <span class="nav-text">Home</span>
+            </div>
+            <div class="nav-link" onclick="location.href='episodes.html'">
+                <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg></span>
+                <span class="nav-text">List Episode</span>
+            </div>
         </div>
-        <div class="episodes-grid" id="episodesGrid">
-            <!-- Episodes will be generated here -->
+    </nav>
+
+    <div class="main-area">
+        <div class="video-wrapper">
+            <button class="btn-back-mobile" onclick="location.href='episodes.html'">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <iframe id="videoPlayer" src="" allow="autoplay" allowfullscreen></iframe>
+        </div>
+
+        <div class="content-area">
+            <div class="v-title" id="vTitle">Series Name</div>
+            <div class="v-ep" id="vEp">
+                <span class="v-badge">HD</span>
+                <span id="vEpText">Episode 1</span>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('eps')" id="tabEps">Semua Episode</div>
+                <div class="tab" onclick="switchTab('more')" id="tabMore">Series Lainnya</div>
+            </div>
+
+            <div class="grid-list" id="viewEps"></div>
+            <div class="series-grid" id="viewMore"></div>
         </div>
     </div>
 
     <script>
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('expanded'); }
+
+        // DATABASE IDENTIK
         const animeEpisodes = {
-            michooy: [
-                'https://drive.google.com/file/d/1-g8sxy5Jyec6uxkJL4hh1zvyJWKye2ok/preview',
-                'https://drive.google.com/file/d/1-zdY2u4GRaGlCLqW5Ii7FD9SJ1SeW6fN/preview',
-                'https://drive.google.com/file/d/10tPGS4z8w3upToRLGwTP9s6nSQVteuCK/preview',
-                'https://drive.google.com/file/d/11Qhhbm8aYvORZgaBxaZIwKcX6O2wBaHx/preview',
-                'https://drive.google.com/file/d/11scHOXHneWwabI1VZPyMDk1TnWqopRO6/preview',
-                'https://drive.google.com/file/d/12BhnXyR21g2Y2c2VT8R-PasQsGymWYuK/preview',
-                'https://drive.google.com/file/d/12qQliLd0qBQvv3Zd9SFmQI1YJLNem2pO/preview',
-                'https://drive.google.com/file/d/13EzdltQcW3KmjL-tQK0MEPbWosyBpmiI/preview',
-                'https://drive.google.com/file/d/13MVnb5oOm55gORrM2sDNnbL4IkoSzmhQ/preview',
-                'https://drive.google.com/file/d/13cbvrv6njgFKyO7wdkWxyNLj_fp87GKO/preview',
-                'https://drive.google.com/file/d/1YbqDWxJp7nKYZAuRSTXkswOO3H3Q9Ha2/preview',
-                'https://drive.google.com/file/d/1h_2JzLg_UlhXp8-7wspUpGnJ733aPCMS/preview'
-            ],
-            michelles: [
-                'https://drive.google.com/file/d/1-ujrALAERXIeH-JMBmIBRNKvSxzczohd/preview',
-                'https://drive.google.com/file/d/10R8NtBQcr6ZmxlUxxhdjxTZweumni9rG/preview',
-                'https://drive.google.com/file/d/110TX0H4AefpZ35qF3O3nylSIv2CcTdWC/preview',
-                'https://drive.google.com/file/d/11Up8IaqHHT0_ghxTkt2uFxYkismnNI53/preview',
-                'https://drive.google.com/file/d/11vVbM953lSYAnvKGMAkOj0TMae6h00gx/preview',
-                'https://drive.google.com/file/d/12PXNtJsU1CCeiI_t-ksk9qpmJvngTepo/preview',
-                'https://drive.google.com/file/d/12tgT8a5jFSwUcstECZHmO6wiBauoxEVp/preview',
-                'https://drive.google.com/file/d/13F6SEA0q659mIc2JPDSYhr5en45yRqdb/preview',
-                'https://drive.google.com/file/d/13RjGkFD2-GEHc0J5cSgvKPrCJcdD1wK3/preview',
-                'https://drive.google.com/file/d/13fJuQTwNzjMNIfljhHFytaRLMX8DzuL2/preview',
-                'https://drive.google.com/file/d/1YjUI6L6yfAlnNA6PljOSs2YVEGBcbOmO/preview',
-                'https://drive.google.com/file/d/1hazt-8p018FUcS-vHgN8qeunqtYmYXGm/preview'
-            ],
-            michoooos: [
-                'https://drive.google.com/file/d/1-t1ksFecI2EtvKJDFWrJoSBfPUQuYAMp/preview',
-                'https://drive.google.com/file/d/10V1dw6pQowBJuKyvkR2h_sJTL9r8tvJX/preview',
-                'https://drive.google.com/file/d/11GjPXo1fz4Uch_Lc7zR2s8ao7MLUsaEU/preview',
-                'https://drive.google.com/file/d/11iSb3X5GJGA933MfoPvfzH6OVaaIn7Gc/preview',
-                'https://drive.google.com/file/d/13acGKZe7fpWj92TUM0Pufnx7SyoUzZgv/preview',
-                'https://drive.google.com/file/d/12jIKhqPVIOIzRJSkvPlgjOGRNJrHNFaF/preview',
-                'https://drive.google.com/file/d/12zv0Kqqs2TiA_P5KxpeVlq4P8cTv0UJF/preview',
-                'https://drive.google.com/file/d/13I9Ogy1mSnBPhycaUGQPfFzHChN5aJqS/preview',
-                'https://drive.google.com/file/d/13T5rL4Hb30pnWCpblgjRrUXAgPX5tvUs/preview',
-                'https://drive.google.com/file/d/13txxe_6UuiN26k2JPcl60W3u04wVGaIy/preview',
-                'https://drive.google.com/file/d/1Yvd_6P_J98s5VKku1KoR9v5QLnh9P8MJ/preview',
-                'https://drive.google.com/file/d/1hbE8TwJk5IGc_a-oGpDY9xpEJSOPRSC0/preview'
-            ],
-            michsx: [
-                'https://drive.google.com/file/d/10Kuk0u5MI-N9q454IcQWV7nsoKPTA907/preview',
-                'https://drive.google.com/file/d/10_UWhxCbDRWASIfxEfUpxRVBzbK8zljn/preview',
-                'https://drive.google.com/file/d/11PSDRwxMY9brJ2-PiQXNnpHQ6tNnXCrT/preview',
-                'https://drive.google.com/file/d/11m-GoFjQhKcfh8oekb1v5Bz-GyknGwls/preview',
-                'https://drive.google.com/file/d/125tKtgEg1MUclDEqIQT9GvCPY2bVz8Dk/preview',
-                'https://drive.google.com/file/d/12kdphv5nooxqSV9JzoV25msBvhZEmtmx/preview',
-                'https://drive.google.com/file/d/13A2rAYMSKrsNdiM190rqgem19aBngLjH/preview',
-                'https://drive.google.com/file/d/13LV_1KLq5qR5TIPHWYV6qEKWxW7PnUKt/preview',
-                'https://drive.google.com/file/d/13WKVdi_ukwQ3taMtT8-9jyswitc_m3Tk/preview',
-                'https://drive.google.com/file/d/13wW8nbvS8MXwR3Z_otN8y4MpVK2ekoRk/preview',
-                'https://drive.google.com/file/d/1YzHNsvq7THYiBzkzPaG49Uy7_pv7StTp/preview',
-                'https://drive.google.com/file/d/1hd7nbXJtKurgGlj4ThDXtJPJPpn7hRbw/preview'
-            ],
-            michahhs: [
-                'https://drive.google.com/file/d/10IstP0OWslhov6YTmbZuF344K4aoYeMi/preview',
-                'https://drive.google.com/file/d/10eqdyTfmWxTM85lquSBF3Jj6q71bg8K8/preview',
-                'https://drive.google.com/file/d/11QUUa0vqWUV9E4b1QiQZ8ieX_gsma_wL/preview',
-                'https://drive.google.com/file/d/11sNpx22M9zRhadsvLNmuC9IXIA6NwUE8/preview',
-                'https://drive.google.com/file/d/127C1QeiCcn6L3XTVy_pfPIW6gIXuRTTY/preview',
-                'https://drive.google.com/file/d/12mdT2w0TQhk3mkjyjL-P91al6Xb85kyV/preview',
-                'https://drive.google.com/file/d/13E-MuDzav7rI-7m23nTip5cR1ENUs_Ux/preview',
-                'https://drive.google.com/file/d/13MInrK2LXdt6wCj2N4JX5N1Fxpd6m1Js/preview',
-                'https://drive.google.com/file/d/13YMIPvE197Yn4M5UCmPeg2lVktbjtAAR/preview',
-                '',
-                'https://drive.google.com/file/d/1Z9xtaZvLzOfbzK6esMt5YA1wQHHRdfs6/preview',
-                'https://drive.google.com/file/d/1heZDsqcWupkgO5RvKVJS3nkMOSWc7YxZ/preview'
-            ],
-            ngabalex: [
-                'https://drive.google.com/file/d/1hcIAEPkpZ6ejakbScxCGlP98IWPbfBqC/preview',
-                'https://drive.google.com/file/d/1htbpV1y0FK6oP2tuxkmzAc2qqaOABV51/preview',
-                'https://drive.google.com/file/d/17etKgfl8gjUYvu01s4BbNbLZn4HY94i8/preview',
-                'https://drive.google.com/file/d/18G93K36h36dv0I_j1nIgbY-B3dj0b9lj/preview',
-                'https://drive.google.com/file/d/187_cj39oKmA8wgfo4JGziSllqDZDlnpp/preview',
-                'https://drive.google.com/file/d/17oPcLMS22yVKR5P9NaKzNdYdVVLf1kF6/preview',
-                'https://drive.google.com/file/d/18MdVz6tVDB_NnE8Pp84V6SLtT0cm7qXP/preview',
-                'https://drive.google.com/file/d/1RQm-yiDJh2d4Tap39CCo80ibwGvUXj95/preview',
-                'https://drive.google.com/file/d/1RL6JVP-v8hgz1LVF4ZuTLLBuI7ZwKNoE/preview',
-                'https://drive.google.com/file/d/1RK4oexTlbEiPSBryqLAL_MGQXok3aMNW/preview',
-                'https://drive.google.com/file/d/1RGLcHLjHy2WipxBkla6l7fCQUVEq9xDB/preview',
-                'https://drive.google.com/file/d/1RAfihIiSPU0ye4qQXfAjoRf9wcphpwBD/preview',
-            ],
-            mecistop: [
-                'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview',
-                'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW/preview',
-                'https://drive.google.com/file/d/17hl6K7DD2SbnHZ977Jat6UUUv2uYzqo6/preview',
-                'https://drive.google.com/file/d/18ELR1_6qf9gSMp4rfifilhkovCks6vDG/preview',
-                'https://drive.google.com/file/d/17xbYoH4nH7Qarhl83tN2ijL1wVLVCf22/preview',
-                'https://drive.google.com/file/d/18UYUd1fYAzXqOCBN0qnkHK79iAx6rZTZ/preview',
-                'https://drive.google.com/file/d/18M1oOzzEnUsycOzs8OOP2gcN-0EHeNJB/preview',
-                'https://drive.google.com/file/d/1Tf_--DfJZ3EqqKsqZK9ZSVviwOsH11io/preview',
-                'https://drive.google.com/file/d/1ToLwyrKleH3v7FNJOrXNuU1w5i3bHb-G/preview',
-                'https://drive.google.com/file/d/1V7sEEVKOBX_9LzDSNtdgZ3AxdWPz9jTE/preview',
-                'https://drive.google.com/file/d/1V4BXcW-0ovHVu5STYotCuJ5F0xY0uM2B/preview',
-                'https://drive.google.com/file/d/1Tan8nSRAyksA5BOxoz3qcO3DXLsOCcnp/preview',
-            ],
-            cece: [
-                'https://drive.google.com/file/d/1hwwG883Sbmj70tInixclN2zCwHLLNeo0/preview',
-                'https://drive.google.com/file/d/1iFHLpTQG9IZBY2VnC5_wHWcBxnQERcXZ/preview',
-                'https://drive.google.com/file/d/18J6pL0ql7nQod1GxNYpsbtLJvm8s9B_6/preview',
-                'https://drive.google.com/file/d/18DZh7OWwGtHzCJVHgvsnbbAaUX7pxDdK/preview',
-                'https://drive.google.com/file/d/17tLyq05QfFDxWfVu9xRHsCCkbE0iSDQs/preview',
-                'https://drive.google.com/file/d/17n054zdkda18WMhekvPkqjBwK2a15DAc/preview',
-                'https://drive.google.com/file/d/18LCbp3RQyrJOSsb8erDhNkszHpq8LZVf/preview',
-                'https://drive.google.com/file/d/1TQAuIcGAONMFxO13Sa5pX2YGmR292QUV/preview',
-                'https://drive.google.com/file/d/1TNQU_24Jue8RvSZCCjbTzae645Gz_ll8/preview',
-                'https://drive.google.com/file/d/1TG60CZt8NsdC7K7D3fmxGjJS9bYkGVL9/preview',
-                'https://drive.google.com/file/d/1TDdxbXVpjotaRy2Di5NCNNQwA0AIC3t_/preview',
-                'https://drive.google.com/file/d/1T6v5auf7G60Wys44rTvcLo2fVACGa-jX/preview',
-            ],
-            michieer: [
-                'https://drive.google.com/file/d/1hkBAeJUDPmTBdpTctLrNWrfkQOi1QpjK/preview',
-                'https://drive.google.com/file/d/18GkYSLn0V-PLXCQnOsyfsquRDvxiAMZr/preview',
-                'https://drive.google.com/file/d/188FhwWesW1LdgmV08dmMzwXAlZGZSxpX/preview',
-                'https://drive.google.com/file/d/17r2zZPkI0MlL3A7PtsuiTB8kWr_3tie0/preview',
-                'https://drive.google.com/file/d/18Pw7CxJSGnvoOL_KBXJpcsfMVc6G5dLp/preview',
-                'https://drive.google.com/file/d/18Vn8pyuLsRODSaWrkWl1Tg2cu3hgimuV/preview',
-                'https://drive.google.com/file/d/1SsApeCze2QEWjl-7vnKRS7LtLxM_35qP/preview',
-                'https://drive.google.com/file/d/1SOnWfMFAAhhwe8hARZjxxgTPVQrzrm2K/preview',
-                'https://drive.google.com/file/d/1SLdoiac5VOany2VeL8UHsMvt_Bqlrazu/preview',
-                'https://drive.google.com/file/d/1SJWdrZx21hOQnyKa9RQoU36QtUD_FsIE/preview',
-                'https://drive.google.com/file/d/1S3M7ZibkWuadK4zxFQSJrkr2gzvT9Ony/preview',
-                'https://drive.google.com/file/d/1S0RozSss4_8wRy8USl7fm-sSSQfU0CKq/preview',
-            ],
-            michneo: [
-               'https://drive.google.com/file/d/1Rz0_UpAUcaIyec1Wb00Pw8snWfMBhQHw/preview',
-               'https://drive.google.com/file/d/1RXh6JtJbddpxQ1h2jIQZ4N6HpWBehEq9/preview',
-               'https://drive.google.com/file/d/1UocvW3DvL_BUBPyKjxNKzgkgUgcOIhlO/preview',
-               'https://drive.google.com/file/d/1UAcevg-22Msnryc2IMOuod9co13ICyWj/preview',
-               'https://drive.google.com/file/d/1VQ-SppVZrQpDVhMlc1x8I1AbdmdvUPbi/preview',
-            ],
-            michraw: [
-               'https://drive.google.com/file/d/1RxrEXMY61UK9-JRRAaf980ocXFAGUoJP/preview',
-               'https://drive.google.com/file/d/1V3hZl-fWefVENDFJhSimezedrE3u9G9h/preview',
-               'https://drive.google.com/file/d/1Ui0JcZz2y8-lgwGlPbirjR0wLKdnvGpT/preview',
-               'https://drive.google.com/file/d/1U7Tj52RIjcZCS00yF4nFXba_SMFFoYse/preview',
-               'https://drive.google.com/file/d/1Xe8w5g_4J9lPtXvCpEQE6asFWX2mRWUh/preview',
-               
-            ],
-            michdream: [
-               'https://drive.google.com/file/d/1Rw4LhiaSrd-XR7pvWUk0m6hDvl2MBurp/preview',
-               'https://drive.google.com/file/d/1UnTxS7MdIGs-yGi7eRzo-Fc3jrD6o0t9/preview',
-               'https://drive.google.com/file/d/1UagTZqIZnndSwuzFrCQ8LXXAoWyEOZnZ/preview',
-               'https://drive.google.com/file/d/1TtYWQEvV3co8CRZYlJDG1bOQGzy7IRue/preview',
-               'https://drive.google.com/file/d/1XgdYgofZBMdWB2qkLf3Ptrt8xJdIgoH1/preview',
-            ],
-            michdark: [
-               'https://drive.google.com/file/d/1Ro3HtXRf6jrYMtZhd-Ea-DJQClWbXwg7/preview',
-               'https://drive.google.com/file/d/1V1zeOOlcDrXdO5m7VnMUpJE9Fyi7Y22C/preview',
-               'https://drive.google.com/file/d/1UQz6lhvNkv2Q47W4npxKaaOAO7AH2DUh/preview',
-               'https://drive.google.com/file/d/1TsEVxttHeFq6NsCFdsu-WlM3iBbTdadD/preview',
-               'https://drive.google.com/file/d/1YPULzAKQYd0weDA2ockprYjkri8eaG1H/preview',
-            ],
-            michlite: [
-               'https://drive.google.com/file/d/1Rnz0OV3pbaMFP_ahvp9Hb335eMBLlE6r/preview',
-               'https://drive.google.com/file/d/1UqhJUHnizPumjh24hJ-JRdPrvOZo2p4f/preview',
-               'https://drive.google.com/file/d/1UNAnRkAINgSv68RNFeangM46CwAOJt_z/preview',
-               'https://drive.google.com/file/d/1Trv0RbxYkXbUH7KGOrwoKy7ycg2DEEB_/preview',
-               'https://drive.google.com/file/d/1YUVeelTkQKsaqj2osyp8ja8QmHwDWqC7/preview',
-            ],
-            michsnap: [
-                              'https://drive.google.com/file/d/1RkP6d0BjUuN3lmVA9j2SkouwnBRZ3cHn/preview',
-               'https://drive.google.com/file/d/1UqdoXsGY-HR6TObsGeYF6_wakfXL4eSr/preview',
-               'https://drive.google.com/file/d/1UMEQ_vc1b8vdxFRM4CQQnmdUo4UWt_5L/preview',
-               'https://drive.google.com/file/d/1TqsJs1JzhkbU7cc8j6fEawDwjEmXA3Cz/preview',
-               'https://drive.google.com/file/d/1YQz-eaFw0Vo6wJLd9GZXHriS3P8CQ9xa/preview',
-                
-            ]
-        };
-        const animeNames = {
-            michooy: 'Michooy',
-            michelles: 'Michelles',
-            michoooos: 'Michoooos',
-            michsx: 'Michsx',
-            michahhs: 'Michahhs',
-            ngabalex: 'Ngabalex',
-            mecistop: 'Mecistop',
-            cece: 'Cece',
-            michieer: 'Michieer',
-            michneo: 'Michneo',
-            michraw: 'Michraw',
-            michdream: 'Michdream',
-            michdark: 'Michdark',
-            michlite: 'Michlite',
-            michsnap: 'Michsnap',
-            
+            michooy: [ 'https://drive.google.com/file/d/1-g8sxy5Jyec6uxkJL4hh1zvyJWKye2ok/preview', 'https://drive.google.com/file/d/1-zdY2u4GRaGlCLqW5Ii7FD9SJ1SeW6fN/preview', 'https://drive.google.com/file/d/10tPGS4z8w3upToRLGwTP9s6nSQVteuCK/preview', 'https://drive.google.com/file/d/11Qhhbm8aYvORZgaBxaZIwKcX6O2wBaHx/preview', 'https://drive.google.com/file/d/11scHOXHneWwabI1VZPyMDk1TnWqopRO6/preview', 'https://drive.google.com/file/d/12BhnXyR21g2Y2c2VT8R-PasQsGymWYuK/preview', 'https://drive.google.com/file/d/12qQliLd0qBQvv3Zd9SFmQI1YJLNem2pO/preview', 'https://drive.google.com/file/d/13EzdltQcW3KmjL-tQK0MEPbWosyBpmiI/preview', 'https://drive.google.com/file/d/13MVnb5oOm55gORrM2sDNnbL4IkoSzmhQ/preview', 'https://drive.google.com/file/d/13cbvrv6njgFKyO7wdkWxyNLj_fp87GKO/preview', 'https://drive.google.com/file/d/1YbqDWxJp7nKYZAuRSTXkswOO3H3Q9Ha2/preview', 'https://drive.google.com/file/d/1h_2JzLg_UlhXp8-7wspUpGnJ733aPCMS/preview' ],
+            michelles: [ 'https://drive.google.com/file/d/1-ujrALAERXIeH-JMBmIBRNKvSxzczohd/preview', 'https://drive.google.com/file/d/10R8NtBQcr6ZmxlUxxhdjxTZweumni9rG/preview', 'https://drive.google.com/file/d/110TX0H4AefpZ35qF3O3nylSIv2CcTdWC/preview', 'https://drive.google.com/file/d/11Up8IaqHHT0_ghxTkt2uFxYkismnNI53/preview', 'https://drive.google.com/file/d/11vVbM953lSYAnvKGMAkOj0TMae6h00gx/preview', 'https://drive.google.com/file/d/12PXNtJsU1CCeiI_t-ksk9qpmJvngTepo/preview', 'https://drive.google.com/file/d/12tgT8a5jFSwUcstECZHmO6wiBauoxEVp/preview', 'https://drive.google.com/file/d/13F6SEA0q659mIc2JPDSYhr5en45yRqdb/preview', 'https://drive.google.com/file/d/13RjGkFD2-GEHc0J5cSgvKPrCJcdD1wK3/preview', 'https://drive.google.com/file/d/13fJuQTwNzjMNIfljhHFytaRLMX8DzuL2/preview', 'https://drive.google.com/file/d/1YjUI6L6yfAlnNA6PljOSs2YVEGBcbOmO/preview', 'https://drive.google.com/file/d/1hazt-8p018FUcS-vHgN8qeunqtYmYXGm/preview' ],
+            michoooos: [ 'https://drive.google.com/file/d/1-t1ksFecI2EtvKJDFWrJoSBfPUQuYAMp/preview', 'https://drive.google.com/file/d/10V1dw6pQowBJuKyvkR2h_sJTL9r8tvJX/preview', 'https://drive.google.com/file/d/11GjPXo1fz4Uch_Lc7zR2s8ao7MLUsaEU/preview', 'https://drive.google.com/file/d/11iSb3X5GJGA933MfoPvfzH6OVaaIn7Gc/preview', 'https://drive.google.com/file/d/13acGKZe7fpWj92TUM0Pufnx7SyoUzZgv/preview', 'https://drive.google.com/file/d/12jIKhqPVIOIzRJSkvPlgjOGRNJrHNFaF/preview', 'https://drive.google.com/file/d/12zv0Kqqs2TiA_P5KxpeVlq4P8cTv0UJF/preview', 'https://drive.google.com/file/d/13I9Ogy1mSnBPhycaUGQPfFzHChN5aJqS/preview', 'https://drive.google.com/file/d/13T5rL4Hb30pnWCpblgjRrUXAgPX5tvUs/preview', 'https://drive.google.com/file/d/13txxe_6UuiN26k2JPcl60W3u04wVGaIy/preview', 'https://drive.google.com/file/d/1Yvd_6P_J98s5VKku1KoR9v5QLnh9P8MJ/preview', 'https://drive.google.com/file/d/1hbE8TwJk5IGc_a-oGpDY9xpEJSOPRSC0/preview' ],
+            michsx: [ 'https://drive.google.com/file/d/10Kuk0u5MI-N9q454IcQWV7nsoKPTA907/preview', 'https://drive.google.com/file/d/10_UWhxCbDRWASIfxEfUpxRVBzbK8zljn/preview', 'https://drive.google.com/file/d/11PSDRwxMY9brJ2-PiQXNnpHQ6tNnXCrT/preview', 'https://drive.google.com/file/d/11m-GoFjQhKcfh8oekb1v5Bz-GyknGwls/preview', 'https://drive.google.com/file/d/125tKtgEg1MUclDEqIQT9GvCPY2bVz8Dk/preview', 'https://drive.google.com/file/d/12kdphv5nooxqSV9JzoV25msBvhZEmtmx/preview', 'https://drive.google.com/file/d/13A2rAYMSKrsNdiM190rqgem19aBngLjH/preview', 'https://drive.google.com/file/d/13LV_1KLq5qR5TIPHWYV6qEKWxW7PnUKt/preview', 'https://drive.google.com/file/d/13WKVdi_ukwQ3taMtT8-9jyswitc_m3Tk/preview', 'https://drive.google.com/file/d/13wW8nbvS8MXwR3Z_otN8y4MpVK2ekoRk/preview', 'https://drive.google.com/file/d/1YzHNsvq7THYiBzkzPaG49Uy7_pv7StTp/preview', 'https://drive.google.com/file/d/1hd7nbXJtKurgGlj4ThDXtJPJPpn7hRbw/preview' ],
+            michahhs: [ 'https://drive.google.com/file/d/10IstP0OWslhov6YTmbZuF344K4aoYeMi/preview', 'https://drive.google.com/file/d/10eqdyTfmWxTM85lquSBF3Jj6q71bg8K8/preview', 'https://drive.google.com/file/d/11QUUa0vqWUV9E4b1QiQZ8ieX_gsma_wL/preview', 'https://drive.google.com/file/d/11sNpx22M9zRhadsvLNmuC9IXIA6NwUE8/preview', 'https://drive.google.com/file/d/127C1QeiCcn6L3XTVy_pfPIW6gIXuRTTY/preview', 'https://drive.google.com/file/d/12mdT2w0TQhk3mkjyjL-P91al6Xb85kyV/preview', 'https://drive.google.com/file/d/13E-MuDzav7rI-7m23nTip5cR1ENUs_Ux/preview', 'https://drive.google.com/file/d/13MInrK2LXdt6wCj2N4JX5N1Fxpd6m1Js/preview', 'https://drive.google.com/file/d/13YMIPvE197Yn4M5UCmPeg2lVktbjtAAR/preview', 'https://drive.google.com/file/d/1Z9xtaZvLzOfbzK6esMt5YA1wQHHRdfs6/preview', 'https://drive.google.com/file/d/1heZDsqcWupkgO5RvKVJS3nkMOSWc7YxZ/preview' ],
+            ngabalex: [ 'https://drive.google.com/file/d/1hcIAEPkpZ6ejakbScxCGlP98IWPbfBqC/preview', 'https://drive.google.com/file/d/1htbpV1y0FK6oP2tuxkmzAc2qqaOABV51/preview', 'https://drive.google.com/file/d/17etKgfl8gjUYvu01s4BbNbLZn4HY94i8/preview', 'https://drive.google.com/file/d/18G93K36h36dv0I_j1nIgbY-B3dj0b9lj/preview', 'https://drive.google.com/file/d/187_cj39oKmA8wgfo4JGziSllqDZDlnpp/preview', 'https://drive.google.com/file/d/17oPcLMS22yVKR5P9NaKzNdYdVVLf1kF6/preview', 'https://drive.google.com/file/d/18MdVz6tVDB_NnE8Pp84V6SLtT0cm7qXP/preview', 'https://drive.google.com/file/d/1RQm-yiDJh2d4Tap39CCo80ibwGvUXj95/preview', 'https://drive.google.com/file/d/1RL6JVP-v8hgz1LVF4ZuTLLBuI7ZwKNoE/preview', 'https://drive.google.com/file/d/1RK4oexTlbEiPSBryqLAL_MGQXok3aMNW/preview', 'https://drive.google.com/file/d/1RGLcHLjHy2WipxBkla6l7fCQUVEq9xDB/preview', 'https://drive.google.com/file/d/1RAfihIiSPU0ye4qQXfAjoRf9wcphpwBD/preview' ],
+            mecistop: [ 'https://drive.google.com/file/d/1i0zNU6HJgYoj1ZtfYflps6tzuGpaXox0/preview', 'https://drive.google.com/file/d/1i4LRwHl5SfcTRwRS6buLSQwQAkt7N4fW/preview', 'https://drive.google.com/file/d/17hl6K7DD2SbnHZ977Jat6UUUv2uYzqo6/preview', 'https://drive.google.com/file/d/18ELR1_6qf9gSMp4rfifilhkovCks6vDG/preview', 'https://drive.google.com/file/d/17xbYoH4nH7Qarhl83tN2ijL1wVLVCf22/preview', 'https://drive.google.com/file/d/18UYUd1fYAzXqOCBN0qnkHK79iAx6rZTZ/preview', 'https://drive.google.com/file/d/18M1oOzzEnUsycOzs8OOP2gcN-0EHeNJB/preview', 'https://drive.google.com/file/d/1Tf_--DfJZ3EqqKsqZK9ZSVviwOsH11io/preview', 'https://drive.google.com/file/d/1ToLwyrKleH3v7FNJOrXNuU1w5i3bHb-G/preview', 'https://drive.google.com/file/d/1V7sEEVKOBX_9LzDSNtdgZ3AxdWPz9jTE/preview', 'https://drive.google.com/file/d/1V4BXcW-0ovHVu5STYotCuJ5F0xY0uM2B/preview', 'https://drive.google.com/file/d/1Tan8nSRAyksA5BOxoz3qcO3DXLsOCcnp/preview' ],
+            cece: [ 'https://drive.google.com/file/d/1hwwG883Sbmj70tInixclN2zCwHLLNeo0/preview', 'https://drive.google.com/file/d/1iFHLpTQG9IZBY2VnC5_wHWcBxnQERcXZ/preview', 'https://drive.google.com/file/d/18J6pL0ql7nQod1GxNYpsbtLJvm8s9B_6/preview', 'https://drive.google.com/file/d/18DZh7OWwGtHzCJVHgvsnbbAaUX7pxDdK/preview', 'https://drive.google.com/file/d/17tLyq05QfFDxWfVu9xRHsCCkbE0iSDQs/preview', 'https://drive.google.com/file/d/17n054zdkda18WMhekvPkqjBwK2a15DAc/preview', 'https://drive.google.com/file/d/18LCbp3RQyrJOSsb8erDhNkszHpq8LZVf/preview', 'https://drive.google.com/file/d/1TQAuIcGAONMFxO13Sa5pX2YGmR292QUV/preview', 'https://drive.google.com/file/d/1TNQU_24Jue8RvSZCCjbTzae645Gz_ll8/preview', 'https://drive.google.com/file/d/1TG60CZt8NsdC7K7D3fmxGjJS9bYkGVL9/preview', 'https://drive.google.com/file/d/1TDdxbXVpjotaRy2Di5NCNNQwA0AIC3t_/preview', 'https://drive.google.com/file/d/1T6v5auf7G60Wys44rTvcLo2fVACGa-jX/preview' ],
+            michieer: [ 'https://drive.google.com/file/d/1hkBAeJUDPmTBdpTctLrNWrfkQOi1QpjK/preview', 'https://drive.google.com/file/d/18GkYSLn0V-PLXCQnOsyfsquRDvxiAMZr/preview', 'https://drive.google.com/file/d/188FhwWesW1LdgmV08dmMzwXAlZGZSxpX/preview', 'https://drive.google.com/file/d/17r2zZPkI0MlL3A7PtsuiTB8kWr_3tie0/preview', 'https://drive.google.com/file/d/18Pw7CxJSGnvoOL_KBXJpcsfMVc6G5dLp/preview', 'https://drive.google.com/file/d/18Vn8pyuLsRODSaWrkWl1Tg2cu3hgimuV/preview', 'https://drive.google.com/file/d/1SsApeCze2QEWjl-7vnKRS7LtLxM_35qP/preview', 'https://drive.google.com/file/d/1SOnWfMFAAhhwe8hARZjxxgTPVQrzrm2K/preview', 'https://drive.google.com/file/d/1SLdoiac5VOany2VeL8UHsMvt_Bqlrazu/preview', 'https://drive.google.com/file/d/1SJWdrZx21hOQnyKa9RQoU36QtUD_FsIE/preview', 'https://drive.google.com/file/d/1S3M7ZibkWuadK4zxFQSJrkr2gzvT9Ony/preview', 'https://drive.google.com/file/d/1S0RozSss4_8wRy8USl7fm-sSSQfU0CKq/preview' ],
+            michneo: [ 'https://drive.google.com/file/d/1Rz0_UpAUcaIyec1Wb00Pw8snWfMBhQHw/preview', 'https://drive.google.com/file/d/1RXh6JtJbddpxQ1h2jIQZ4N6HpWBehEq9/preview', 'https://drive.google.com/file/d/1UocvW3DvL_BUBPyKjxNKzgkgUgcOIhlO/preview', 'https://drive.google.com/file/d/1UAcevg-22Msnryc2IMOuod9co13ICyWj/preview', 'https://drive.google.com/file/d/1VQ-SppVZrQpDVhMlc1x8I1AbdmdvUPbi/preview' ],
+            michraw: [ 'https://drive.google.com/file/d/1RxrEXMY61UK9-JRRAaf980ocXFAGUoJP/preview', 'https://drive.google.com/file/d/1V3hZl-fWefVENDFJhSimezedrE3u9G9h/preview', 'https://drive.google.com/file/d/1Ui0JcZz2y8-lgwGlPbirjR0wLKdnvGpT/preview', 'https://drive.google.com/file/d/1U7Tj52RIjcZCS00yF4nFXba_SMFFoYse/preview', 'https://drive.google.com/file/d/1Xe8w5g_4J9lPtXvCpEQE6asFWX2mRWUh/preview' ],
+            michdream: [ 'https://drive.google.com/file/d/1Rw4LhiaSrd-XR7pvWUk0m6hDvl2MBurp/preview', 'https://drive.google.com/file/d/1UnTxS7MdIGs-yGi7eRzo-Fc3jrD6o0t9/preview', 'https://drive.google.com/file/d/1UagTZqIZnndSwuzFrCQ8LXXAoWyEOZnZ/preview', 'https://drive.google.com/file/d/1TtYWQEvV3co8CRZYlJDG1bOQGzy7IRue/preview', 'https://drive.google.com/file/d/1XgdYgofZBMdWB2qkLf3Ptrt8xJdIgoH1/preview' ],
+            michdark: [ 'https://drive.google.com/file/d/1Ro3HtXRf6jrYMtZhd-Ea-DJQClWbXwg7/preview', 'https://drive.google.com/file/d/1V1zeOOlcDrXdO5m7VnMUpJE9Fyi7Y22C/preview', 'https://drive.google.com/file/d/1UQz6lhvNkv2Q47W4npxKaaOAO7AH2DUh/preview', 'https://drive.google.com/file/d/1TsEVxttHeFq6NsCFdsu-WlM3iBbTdadD/preview', 'https://drive.google.com/file/d/1YPULzAKQYd0weDA2ockprYjkri8eaG1H/preview' ],
+            michlite: [ 'https://drive.google.com/file/d/1Rnz0OV3pbaMFP_ahvp9Hb335eMBLlE6r/preview', 'https://drive.google.com/file/d/1UqhJUHnizPumjh24hJ-JRdPrvOZo2p4f/preview', 'https://drive.google.com/file/d/1UNAnRkAINgSv68RNFeangM46CwAOJt_z/preview', 'https://drive.google.com/file/d/1Trv0RbxYkXbUH7KGOrwoKy7ycg2DEEB_/preview', 'https://drive.google.com/file/d/1YUVeelTkQKsaqj2osyp8ja8QmHwDWqC7/preview' ],
+            michsnap: [ 'https://drive.google.com/file/d/1RkP6d0BjUuN3lmVA9j2SkouwnBRZ3cHn/preview', 'https://drive.google.com/file/d/1UqdoXsGY-HR6TObsGeYF6_wakfXL4eSr/preview', 'https://drive.google.com/file/d/1UMEQ_vc1b8vdxFRM4CQQnmdUo4UWt_5L/preview', 'https://drive.google.com/file/d/1TqsJs1JzhkbU7cc8j6fEawDwjEmXA3Cz/preview', 'https://drive.google.com/file/d/1YQz-eaFw0Vo6wJLd9GZXHriS3P8CQ9xa/preview' ]
         };
 
-        let currentSeries = '';
-        let currentEpisodeIndex = 0;
-        
-        function init() {
-            // Set default series to first one if not in URL
-            const params = new URLSearchParams(window.location.search);
-            const seriesParam = params.get('series');
+        const allCats = [
+            { id: 'michooy', name: 'Michooy', img: 'https://files.catbox.moe/dnyaor.jpg' }, { id: 'michelles', name: 'Michelles', img: 'https://files.catbox.moe/ibj4a2.jpg' }, { id: 'michoooos', name: 'Michoooos', img: 'https://files.catbox.moe/m2hd2v.jpeg' }, { id: 'michsx', name: 'Michsx', img: 'https://files.catbox.moe/4tjwfo.jpeg' }, { id: 'michahhs', name: 'Michahhs', img: 'https://files.catbox.moe/fgynpk.jpeg' }, { id: 'michneo', name: 'Michneo', img: 'https://files.catbox.moe/skijvp.jpg' }, { id: 'michraw', name: 'Michraw', img: 'https://files.catbox.moe/cvstos.jpg' }, { id: 'michsnap', name: 'Michsnap', img: 'https://files.catbox.moe/wslozw.jpg' }, { id: 'ngabalex', name: 'Ngabalex', img: 'https://files.catbox.moe/x0u6wh.jpg' }, { id: 'mecistop', name: 'Mecistop', img: 'https://files.catbox.moe/jrtpe5.jpg' }, { id: 'cece', name: 'Cece', img: 'https://files.catbox.moe/u7sd04.jpg' }, { id: 'michieer', name: 'Michieer', img: 'https://files.catbox.moe/yua9ji.jpg' }, { id: 'michdream', name: 'Michdream', img: 'https://files.catbox.moe/6c82hz.jpg' }, { id: 'michdark', name: 'Michdark', img: 'https://files.catbox.moe/labdhh.jpg' }, { id: 'michlite', name: 'Michlite', img: 'https://files.catbox.moe/ttohcw.jpg' }
+        ];
+
+        let cId = localStorage.getItem('selectedCategoryId') || 'michooy';
+        let cName = localStorage.getItem('selectedCategoryName') || 'Michooy';
+        let epIdx = parseInt(localStorage.getItem('targetEpisodeIndex')) || 0;
+
+        function loadPlayer() {
+            document.getElementById('vTitle').innerText = cName;
+            document.getElementById('vEpText').innerText = `Episode ${epIdx + 1}`;
             
-            if (seriesParam && animeEpisodes[seriesParam]) {
-                currentSeries = seriesParam;
-            } else {
-                currentSeries = Object.keys(animeEpisodes)[0];
+            // FILTER YANG BIKIN SINKRON
+            const rawEps = animeEpisodes[cId] || [];
+            const validEps = rawEps.filter(link => link && link.trim() !== '');
+
+            if(validEps[epIdx]) {
+                document.getElementById('videoPlayer').src = validEps[epIdx];
             }
             
-            // Generate series selector
-            generateSeriesSelector();
-            
-            // Load series
-            loadSeries(currentSeries);
-            
-            // Try to load last played episode
-            const episodeParam = params.get('episode');
-const lastEpisode = localStorage.getItem(`lastEpisode_${currentSeries}`);
+            renderEps(validEps);
+            renderMore();
+        }
 
-if (episodeParam !== null && !isNaN(episodeParam)) {
-    currentEpisodeIndex = parseInt(episodeParam);
-    loadEpisode(currentEpisodeIndex);
-} else if (lastEpisode !== null) {
-    currentEpisodeIndex = parseInt(lastEpisode);
-    loadEpisode(currentEpisodeIndex);
-} else {
-    loadEpisode(0);
-}
-        }
-        
-        function generateSeriesSelector() {
-            const container = document.getElementById('seriesSelector');
-            container.innerHTML = '';
-            
-            Object.keys(animeEpisodes).forEach(seriesKey => {
-                const btn = document.createElement('button');
-                btn.className = 'series-btn';
-                btn.textContent = animeNames[seriesKey];
-                if (seriesKey === currentSeries) {
-                    btn.classList.add('active');
-                }
-                
-                btn.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    document.querySelectorAll('.series-btn').forEach(b => {
-                        b.classList.remove('active');
-                    });
-                    
-                    // Add active class to clicked button
-                    btn.classList.add('active');
-                    
-                    // Change series
-                    currentSeries = seriesKey;
-                    currentEpisodeIndex = 0;
-                    
-                    // Update URL
-                    const url = new URL(window.location);
-                    url.searchParams.set('series', seriesKey);
-                    window.history.pushState({}, '', url);
-                    
-                    // Load new series
-                    loadSeries(seriesKey);
-                    loadEpisode(0);
-                });
-                
-                container.appendChild(btn);
-            });
-        }
-        
-        function loadSeries(seriesKey) {
-            document.getElementById('categoryTitle').textContent = animeNames[seriesKey];
-            document.getElementById('episodesCount').textContent = `${animeEpisodes[seriesKey].length} Episodes`;
-            
-            generateEpisodeCards(seriesKey);
-            updateNavigationButtons();
-        }
-        
-        function generateEpisodeCards(seriesKey) {
-            const container = document.getElementById('episodesGrid');
-            container.innerHTML = '';
-            
-            animeEpisodes[seriesKey].forEach((episode, index) => {
-                const card = document.createElement('div');
-                card.className = 'episode-card';
-                if (index === currentEpisodeIndex) {
-                    card.classList.add('current');
-                }
-                if (!episode) {
-                    card.classList.add('unavailable');
-                }
-                
-                card.innerHTML = `
-                    <div class="episode-number">Episode ${index + 1}</div>
-                    <div class="episode-title">${episode ? 'Available' : 'Coming Soon'}</div>
-                    <svg class="play-icon" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
+        function renderEps(validEps) {
+            const list = document.getElementById('viewEps');
+            list.innerHTML = '';
+
+            validEps.forEach((link, index) => {
+                const div = document.createElement('div');
+                div.className = 'box-card' + (index === epIdx ? ' active' : '');
+                div.innerHTML = `
+                    <div class="box-num">${index + 1}</div>
+                    <div class="box-info">
+                        <div class="box-title">Episode ${index + 1}</div>
+                        <div style="font-size:0.85rem; color:#888;">${index === epIdx ? 'Sedang Diputar' : 'Tersedia'}</div>
+                    </div>
+                    ${index === epIdx ? '<div class="box-play-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>' : ''}
                 `;
-                
-                if (episode) {
-                    card.addEventListener('click', () => {
-                        currentEpisodeIndex = index;
-                        loadEpisode(index);
-                        updateEpisodeCards();
-                        updateNavigationButtons();
-                    });
-                }
-                
-                container.appendChild(card);
+                // KUNCI FIX BUG: index dikirim persis
+                div.onclick = () => {
+                    epIdx = index;
+                    localStorage.setItem('targetEpisodeIndex', index);
+                    loadPlayer();
+                };
+                list.appendChild(div);
             });
         }
-        
-        function loadEpisode(index) {
-            const episodes = animeEpisodes[currentSeries];
-            if (index < 0 || index >= episodes.length || !episodes[index]) {
-                return;
-            }
+
+        function renderMore() {
+            const grid = document.getElementById('viewMore');
+            grid.innerHTML = '';
             
-            // Save to localStorage
-            localStorage.setItem(`lastEpisode_${currentSeries}`, index);
-            
-            // Update UI
-            document.getElementById('loadingIndicator').style.display = 'flex';
-            document.getElementById('videoPlayer').style.display = 'none';
-            document.getElementById('currentEpisodeTitle').textContent = `Episode ${index + 1}`;
-            
-            // Set the video source
-            const videoPlayer = document.getElementById('videoPlayer');
-            videoPlayer.src = episodes[index];
-            
-            // Show video when loaded
-            videoPlayer.onload = () => {
-                document.getElementById('loadingIndicator').style.display = 'none';
-                videoPlayer.style.display = 'block';
-            };
-            
-            // Update episode cards
-            updateEpisodeCards();
-            updateNavigationButtons();
-        }
-        
-        function updateEpisodeCards() {
-            const cards = document.querySelectorAll('.episode-card');
-            cards.forEach((card, index) => {
-                card.classList.remove('current');
-                if (index === currentEpisodeIndex) {
-                    card.classList.add('current');
-                }
+            allCats.forEach(cat => {
+                if(cat.id === cId) return; 
+                const div = document.createElement('div');
+                div.className = 's-card';
+                div.innerHTML = `<img src="${cat.img}" loading="lazy"><div class="s-card-name">${cat.name}</div>`;
+                div.onclick = () => {
+                    cId = cat.id; cName = cat.name; epIdx = 0;
+                    localStorage.setItem('selectedCategoryId', cat.id);
+                    localStorage.setItem('selectedCategoryName', cat.name);
+                    localStorage.setItem('selectedCategoryImg', cat.img);
+                    localStorage.setItem('targetEpisodeIndex', 0);
+                    switchTab('eps'); loadPlayer();
+                };
+                grid.appendChild(div);
             });
         }
-        
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            prevBtn.disabled = currentEpisodeIndex === 0;
-            nextBtn.disabled = currentEpisodeIndex === animeEpisodes[currentSeries].length - 1;
-        }
-        
-        function previousEpisode() {
-            if (currentEpisodeIndex > 0) {
-                currentEpisodeIndex--;
-                loadEpisode(currentEpisodeIndex);
+
+        function switchTab(t) {
+            if (t === 'eps') {
+                document.getElementById('tabEps').classList.add('active');
+                document.getElementById('tabMore').classList.remove('active');
+                document.getElementById('viewEps').style.display = 'grid';
+                document.getElementById('viewMore').style.display = 'none';
+            } else {
+                document.getElementById('tabMore').classList.add('active');
+                document.getElementById('tabEps').classList.remove('active');
+                document.getElementById('viewMore').style.display = 'grid';
+                document.getElementById('viewEps').style.display = 'none';
             }
         }
-        
-        function nextEpisode() {
-            if (currentEpisodeIndex < animeEpisodes[currentSeries].length - 1) {
-                currentEpisodeIndex++;
-                loadEpisode(currentEpisodeIndex);
-            }
-        }
-        
-        function goBack() {
-            window.history.back();
-        }
-        
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', init);
-        
-        // Handle browser back/forward
-        window.addEventListener('popstate', () => {
-            const params = new URLSearchParams(window.location.search);
-            const seriesParam = params.get('series');
-            
-            if (seriesParam && animeEpisodes[seriesParam] && seriesParam !== currentSeries) {
-                currentSeries = seriesParam;
-                currentEpisodeIndex = 0;
-                loadSeries(currentSeries);
-                loadEpisode(0);
-            }
-        });
+
+        loadPlayer();
     </script>
 </body>
 </html>
