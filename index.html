@@ -5,584 +5,478 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Michie Hots</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        :root { --bg: #0a0a0a; --bg-sec: #141414; --text: #fff; --red: #E50914; --gray: #aaa; --sidebar-w: 75px; --sidebar-expanded-w: 240px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; overflow-x: hidden; }
+        
+        .app-container { display: flex; min-height: 100vh; position: relative; }
+        
+        /* --- SIDEBAR PC --- */
+        .sidebar { display: none; width: var(--sidebar-w); background: var(--bg-sec); flex-direction: column; padding: 25px 0; position: fixed; height: 100vh; border-right: 1px solid #222; z-index: 100; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; }
+        .sidebar.expanded { width: var(--sidebar-expanded-w); }
+        .menu-toggle { color: #fff; cursor: pointer; margin: 0 25px 40px 25px; transition: 0.2s; display: inline-flex; }
+        .menu-toggle:hover { color: var(--red); }
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 0 15px; }
+        .nav-link { display: flex; align-items: center; color: var(--gray); font-size: 1.05rem; padding: 12px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { background: #2a2a2a; color: #fff; }
+        .nav-icon { min-width: 25px; display: flex; justify-content: center; align-items: center; }
+        .nav-text { margin-left: 15px; font-weight: 500; opacity: 0; transition: opacity 0.2s; display: none; }
+        .sidebar.expanded .nav-text { display: block; opacity: 1; }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #000;
-            color: white;
-            overflow-x: hidden;
-        }
+        .main-content { flex: 1; padding-bottom: 80px; width: 100%; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* Header Netflix Style */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
-            padding: 15px 20px;
-            transition: all 0.3s ease;
-        }
+        /* --- TOP HEADER PC --- */
+        .top-right-nav { display: none; position: absolute; top: 20px; right: 4%; z-index: 90; align-items: center; gap: 20px; }
+        .nav-btn { background: transparent; border: none; color: #fff; cursor: pointer; transition: 0.2s; display: flex; align-items: center; position: relative;}
+        .nav-btn:hover { color: var(--gray); }
+        
+        /* Avatar Profil */
+        .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #333; cursor: pointer; transition: 0.2s; background: url('https://files.catbox.moe/veo8xt.jpg') center/cover no-repeat; }
+        .nav-avatar:hover { border-color: var(--red); transform: scale(1.05); }
+        
+        .dropdown-menu { position: absolute; top: 50px; right: 0; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px); border: 1px solid #333; border-radius: 8px; padding: 10px 0; min-width: 200px; display: none; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .dropdown-menu.active { display: flex; }
+        .dropdown-item { padding: 12px 20px; color: #ccc; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .dropdown-item:hover { background: #2a2a2a; color: #fff; }
+        .dropdown-divider { height: 1px; background: #333; margin: 5px 0; }
+        .notif-badge { position: absolute; top: -2px; right: -2px; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: bold; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .header.scrolled {
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(10px);
-        }
+        /* --- NAVIGASI BAWAH MOBILE --- */
+        .bottom-nav { display: flex; position: fixed; bottom: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(15px); padding: 10px 0; border-top: 1px solid #222; z-index: 100; justify-content: space-around; }
+        .b-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 0.65rem; font-weight: 500; cursor: pointer; transition: 0.2s; flex: 1;}
+        .b-nav-item:hover, .b-nav-item.active { color: #fff; }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* --- MOBILE HEADER --- */
+        .mobile-header { display: flex; padding: 20px; justify-content: space-between; align-items: center; position: absolute; top:0; width: 100%; z-index: 20; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
+        .mobile-logo { color: var(--red); font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; font-family: Georgia, serif;}
+        .mobile-actions { display: flex; align-items: center; gap: 15px; }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #e50914;
-            letter-spacing: 1px;
-        }
+        /* --- HERO BANNER (PERBAIKAN JEDA VIDEO) --- */
+        .banner { height: 65vh; position: relative; display: flex; align-items: flex-end; padding: 40px; overflow: hidden; background-color: #000; }
+        
+        /* Gambar selalu di z-index 1 buat nutupin layar hitam */
+        .banner-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; z-index: 1; opacity: 0; transition: opacity 0.5s ease; }
+        .banner-image.active { opacity: 0.8; }
+        
+        /* Video di z-index 2 (di atas gambar), awalnya transparan (opacity 0) */
+        .banner-video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); z-index: 2; object-fit: cover; opacity: 0; transition: opacity 1.5s ease-in-out; }
+        .banner-video.active { opacity: 0.8; } /* Nanti muncul mulus pas udah muter */
+        
+        .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 50%); z-index: 3; }
+        
+        .banner-content { position: relative; z-index: 4; max-width: 600px; opacity: 1; transition: opacity 0.5s ease-in-out; }
+        .banner-content.fade-out { opacity: 0; }
+        .banner-title { font-size: 3.2rem; font-weight: 900; margin-bottom: 8px; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); }
+        .banner-tags { display: flex; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; font-weight: bold; color: #ccc;}
+        .tag-match { color: #46d369; }
+        .tag-age { border: 1px solid #888; padding: 1px 5px; border-radius: 3px; color: #ddd;}
+        .banner-desc { font-size: 1rem; color: #ddd; margin-bottom: 20px; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;}
+        
+        .btn-play { background: #fff; color: #000; font-weight: bold; padding: 12px 28px; border-radius: 4px; border: none; font-size: 1.1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
+        .btn-play:hover { background: #ddd; transform: scale(1.05); }
 
-        .header-icons {
-            display: flex;
-            gap: 20px;
-        }
+        /* --- BARIS SERIES KATEGORI --- */
+        .view-section { transition: opacity 0.3s; }
+        .rows-container { padding: 0 20px; position: relative; z-index: 5; margin-top: -20px; }
+        .row-title { font-size: 1.2rem; margin-bottom: 15px; font-weight: 600; color: #e5e5e5; display: flex; align-items: center; gap: 10px;}
+        
+        .row-posters { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 20px; scrollbar-width: none; }
+        .row-posters::-webkit-scrollbar { display: none; }
+        .row-posters.grid-mode { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
 
-        .icon {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+        .poster { flex: 0 0 auto; width: 130px; aspect-ratio: 2/3; border-radius: 6px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s; border: 1px solid transparent;}
+        .poster:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        .poster img { width: 100%; height: 100%; object-fit: cover; }
+        .poster-title { position: absolute; bottom:0; width: 100%; padding: 15px 10px 10px; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); font-weight: 600; font-size: 0.85rem; text-align: center; line-height: 1.2;}
+        .ep-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.8); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: #ddd; border: 1px solid #444;}
 
-        .icon:hover {
-            transform: scale(1.1);
-        }
+        /* --- OVERLAYS (SEARCH & HISTORY) --- */
+        .full-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.98); z-index: 999; display: none; flex-direction: column; padding: 40px 5%; opacity: 0; transition: opacity 0.3s ease; }
+        .full-overlay.active { display: flex; opacity: 1; }
+        .overlay-header { display: flex; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; gap: 15px; }
+        .overlay-header input { flex: 1; background: transparent; border: none; color: #fff; font-size: 1.5rem; outline: none; font-weight: 500; }
+        .overlay-header h2 { flex: 1; font-size: 1.8rem; font-weight: bold; }
+        .close-btn { background: transparent; border: none; color: var(--gray); cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .close-btn:hover { color: var(--red); transform: rotate(90deg); }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; overflow-y: auto; padding-bottom: 50px; }
 
-        /* Navigation */
-        .nav {
-            position: fixed;
-            top: 70px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            padding: 0 20px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 30px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .nav-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .nav-tab {
-            font-size: 16px;
-            color: #ccc;
-            cursor: pointer;
-            white-space: nowrap;
-            padding: 10px 0;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tab.active {
-            color: white;
-            border-bottom-color: #e50914;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-top: 120px;
-            padding-bottom: 80px;
-        }
-
-        /* Featured Section */
-        .featured-section {
-            position: relative;
-            height: 60vh;
-            background: linear-gradient(45deg, #141414, #2d1b2e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .featured-content {
-            text-align: center;
-            z-index: 2;
-            animation: fadeInUp 1s ease;
-        }
-
-        .featured-title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            background: linear-gradient(45deg, #e50914, #00bcd4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .featured-subtitle {
-            font-size: 18px;
-            color: #ccc;
-            margin-bottom: 30px;
-        }
-
-        .play-button {
-            background: linear-gradient(45deg, #e50914, #ff6b6b);
-            border: none;
-            padding: 15px 40px;
-            border-radius: 25px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
-        }
-
-        .play-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(229, 9, 20, 0.4);
-        }
-
-        /* Content Sections */
-        .content-section {
-            margin-bottom: 40px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding: 0 20px;
-            color: white;
-        }
-
-        .anime-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 0 20px;
-        }
-
-        .anime-card {
-            position: relative;
-            background: #1a1a1a;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            aspect-ratio: 3/4;
-        }
-
-        .anime-card:hover {
-            transform: scale(1.05) translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            z-index: 10;
-        }
-
-        .anime-card img {
-            width: 100%;
-            height: 70%;
-            object-fit: cover;
-            transition: all 0.4s ease;
-        }
-
-        .anime-card:hover img {
-            filter: brightness(1.2);
-        }
-
-        .anime-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 20px 10px 10px;
-        }
-
-        .anime-title {
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: white;
-        }
-
-        /* Horizontal Scroll for Mobile */
-        @media (max-width: 768px) {
-            .anime-grid {
-                display: flex;
-                overflow-x: auto;
-                gap: 15px;
-                scroll-snap-type: x mandatory;
-                padding: 0 20px;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
-            }
-
-            .anime-grid::-webkit-scrollbar {
-                display: none;
-            }
-
-            .anime-card {
-                min-width: 130px;
-                scroll-snap-align: start;
-            }
-
-            .featured-title {
-                font-size: 28px;
-            }
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            border-top: 1px solid #333;
-        }
-
-        .bottom-nav-content {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active {
-            color: #e50914;
-        }
-
-        .nav-item span {
-            font-size: 10px;
-            margin-top: 5px;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #333;
-            border-radius: 50%;
-            border-top-color: #e50914;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @media (min-width: 768px) {
+            .sidebar { display: flex; }
+            .bottom-nav, .mobile-header { display: none; }
+            .main-content { margin-left: var(--sidebar-w); padding-bottom: 40px; }
+            .sidebar.expanded + .main-content { margin-left: var(--sidebar-expanded-w); }
+            .top-right-nav { display: flex; }
+            .poster { width: 200px; aspect-ratio: 16/9; }
+            .row-posters.grid-mode { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+            .results-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+            .banner { height: 80vh; padding: 60px; }
+            .banner-title { font-size: 4.5rem; }
+            .full-overlay { padding: 50px 10%; }
+            .overlay-header input { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header" id="header">
-        <div class="header-content">
-            <div class="logo">MICHIE HOTS</div>
-            <div class="header-icons">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-                </svg>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </div>
-        </div>
-    </div>
+            <div class="nav-menu">
+                <div class="nav-link active" onclick="filterView('home', this)">
+                    <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+                    <span class="nav-text">Beranda</span>
+                </div>
+                <div class="nav-link" onclick="filterView('completed', this)">
+                    <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span>
+                    <span class="nav-text">Completed</span>
+                </div>
+                <div class="nav-link" onclick="filterView('new', this)">
+                    <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                    <span class="nav-text">New</span>
+                </div>
+                <div class="nav-link" onclick="openOverlay('searchModal')">
+                    <span class="nav-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+                    <span class="nav-text">Cari</span>
+                </div>
+            </div>
+        </nav>
 
-    <!-- Navigation -->
-    <div class="nav">
-        <div class="nav-tabs">
-            <div class="nav-tab active" data-tab="home">Beranda</div>
-            <div class="nav-tab" data-tab="trending">Trending</div>
-            <div class="nav-tab" data-tab="new">Terbaru</div>
-            <div class="nav-tab" data-tab="favorites">Favorit</div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Featured Section -->
-        <div class="featured-section">
-            <div class="featured-content">
-                <h1 class="featured-title">Selamat Datang</h1>
-                <p class="featured-subtitle">Temukan koleksi terbaik dari Michie Hots</p>
-                <button class="play-button" onclick="scrollToContent()">
-                    ▶ Mulai Menonton
+        <div class="top-right-nav">
+            <div style="position: relative;">
+                <button class="nav-btn" onclick="toggleDropdown('notifMenuDesktop')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <div class="notif-badge">2</div>
                 </button>
+                <div class="dropdown-menu" id="notifMenuDesktop">
+                    <div class="dropdown-item">✨ Episode baru Michsx telah rilis!</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item">🔥 Michooy Series sedang trending.</div>
+                </div>
             </div>
-        </div>
-
-        <!-- Content Sections -->
-        <div class="content-section">
-            <h2 class="section-title">Koleksi Utama</h2>
-            <div class="anime-grid" id="mainGrid">
-                <div class="anime-card fade-in" onclick="openAnime('michooy')" style="animation-delay: 0.1s">
-                    <img src="https://files.catbox.moe/dnyaor.jpg" alt="Michooy">
-                    <div class="anime-info">
-                        <div class="anime-title">Michooy</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michelles')" style="animation-delay: 0.2s">
-                    <img src="https://files.catbox.moe/ibj4a2.jpg" alt="Michelles">
-                    <div class="anime-info">
-                        <div class="anime-title">Michelles</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michoooos')" style="animation-delay: 0.3s">
-                    <img src="https://files.catbox.moe/m2hd2v.jpeg" alt="Michoooos">
-                    <div class="anime-info">
-                        <div class="anime-title">Michoooos</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michsx')" style="animation-delay: 0.4s">
-                    <img src="https://files.catbox.moe/4tjwfo.jpeg" alt="Michsx">
-                    <div class="anime-info">
-                        <div class="anime-title">Michsx</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michahhs')" style="animation-delay: 0.5s">
-                    <img src="https://files.catbox.moe/fgynpk.jpeg" alt="Michahhs">
-                    <div class="anime-info">
-                        <div class="anime-title">Michahhs</div>
-                    </div>
-                  </div>
-                 <div class="anime-card fade-in" onclick="openAnime('michneo')" style="animation-delay: 0.5s">
-                    <img src="https://files.catbox.moe/skijvp.jpg" alt="Michneo">
-                    <div class="anime-info">
-                        <div class="anime-title">Michneo</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michraw')" style="animation-delay: 0.5s">
-                    <img src="https://files.catbox.moe/cvstos.jpg" alt="Michraw">
-                    <div class="anime-info">
-                        <div class="anime-title">Michraw</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michsnap')" style="animation-delay: 0.5s">
-                    <img src="https://files.catbox.moe/wslozw.jpg" alt="Michsnap">
-                    <div class="anime-info">
-                        <div class="anime-title">Michsnap</div>
-                    </div>
+            <div style="position: relative;">
+                <div class="nav-avatar" onclick="toggleDropdown('profileMenuDesktop')"></div>
+                
+                <div class="dropdown-menu" id="profileMenuDesktop">
+                    <div class="dropdown-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Detail Akun</div>
+                    <div class="dropdown-item" onclick="openOverlay('historyModal')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Riwayat</div>
+                    <div class="dropdown-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Pengaturan</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" style="color: var(--red);" onclick="alert('Keluar berhasil.')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Keluar</div>
                 </div>
             </div>
         </div>
 
-        <div class="content-section">
-            <h2 class="section-title">Koleksi Spesial</h2>
-            <div class="anime-grid">
-                <div class="anime-card fade-in" onclick="openAnime('ngabalex')" style="animation-delay: 0.6s">
-                    <img src="https://files.catbox.moe/x0u6wh.jpg" alt="Ngabalex">
-                    <div class="anime-info">
-                        <div class="anime-title">Ngabalex</div>
+        <main class="main-content" id="main-content">
+            <div class="mobile-header" id="mobileHeader">
+                <div class="mobile-logo">Michie</div>
+                <div class="mobile-actions">
+                    <button class="nav-btn" onclick="toggleDropdown('notifMenuMobile')">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <div class="notif-badge">2</div>
+                    </button>
+                    <div class="dropdown-menu" id="notifMenuMobile" style="right: 60px; top: 60px;">
+                        <div class="dropdown-item">✨ Episode baru Michsx telah rilis!</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item">🔥 Michooy Series sedang trending.</div>
                     </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('mecistop')" style="animation-delay: 0.7s">
-                    <img src="https://files.catbox.moe/jrtpe5.jpg" alt="Mecistop">
-                    <div class="anime-info">
-                        <div class="anime-title">Mecistop</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('cece')" style="animation-delay: 0.8s">
-                    <img src="https://files.catbox.moe/u7sd04.jpg" alt="Cece">
-                    <div class="anime-info">
-                        <div class="anime-title">Cece</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michieer')" style="animation-delay: 0.9s">
-                    <img src="https://files.catbox.moe/yua9ji.jpg" alt="Michieer">
-                    <div class="anime-info">
-                        <div class="anime-title">Michieer</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michdream')" style="animation-delay: 0.9s">
-                    <img src="https://files.catbox.moe/6c82hz.jpg" alt="Michdream">
-                    <div class="anime-info">
-                        <div class="anime-title">Michdream</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michdark')" style="animation-delay: 0.9s">
-                    <img src="https://files.catbox.moe/labdhh.jpg" alt="Michdark">
-                    <div class="anime-info">
-                        <div class="anime-title">Michdark</div>
-                    </div>
-                </div>
-                <div class="anime-card fade-in" onclick="openAnime('michlite')" style="animation-delay: 0.9s">
-                    <img src="https://files.catbox.moe/ttohcw.jpg" alt="Michlite">
-                    <div class="anime-info">
-                        <div class="anime-title">Michlite</div>
+                    
+                    <div class="nav-avatar" onclick="toggleDropdown('profileMenuMobile')"></div>
+                    
+                    <div class="dropdown-menu" id="profileMenuMobile" style="right: 20px; top: 60px;">
+                        <div class="dropdown-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Detail Akun</div>
+                        <div class="dropdown-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Pengaturan</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" style="color: var(--red);" onclick="alert('Keluar berhasil.')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Keluar</div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="bottom-nav-content">
-            <div class="nav-item active">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-                <span>Beranda</span>
+            <header class="banner" id="mainBanner">
+                <img id="bgImage" class="banner-image active" src="" alt="Banner">
+                <video id="bgVideo" class="banner-video" autoplay loop muted playsinline></video>
+                
+                <div class="banner-content" id="bannerContent">
+                    <h1 class="banner-title" id="heroTitle">Loading...</h1>
+                    <div class="banner-tags">
+                        <span class="tag-match">98% Match</span>
+                        <span>2026</span>
+                        <span class="tag-age">18+</span>
+                        <span>Premium Series</span>
+                    </div>
+                    <p class="banner-desc" id="heroDesc">Loading description...</p>
+                    <button class="btn-play" onclick="playHero()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Now
+                    </button>
+                </div>
+            </header>
+
+            <div class="rows-container" style="padding-top: 20px;">
+                <div class="view-section" id="secCompleted">
+                    <div class="row-title">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> 
+                        Completed Series
+                    </div>
+                    <div class="row-posters" id="rowCompleted"></div>
+                </div>
+                
+                <div class="view-section" id="secNew" style="margin-top: 30px;">
+                    <div class="row-title">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 
+                        New Series
+                    </div>
+                    <div class="row-posters" id="rowNew"></div>
+                </div>
             </div>
-            <div class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
+        </main>
+
+        <nav class="bottom-nav" id="bottomNav">
+            <div class="b-nav-item active" onclick="filterView('home', this)">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Home</span>
+            </div>
+            <div class="b-nav-item" onclick="filterView('completed', this)">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Completed</span>
+            </div>
+            <div class="b-nav-item" onclick="filterView('new', this)">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span>New</span>
+            </div>
+            <div class="b-nav-item" onclick="openOverlay('searchModal')">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span>Cari</span>
             </div>
-            <div class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                </svg>
-                <span>Daftar</span>
+            <div class="b-nav-item" onclick="openOverlay('historyModal')">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>Riwayat</span>
             </div>
-            <div class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                </svg>
-                <span>Profil</span>
+        </nav>
+
+        <div class="full-overlay" id="searchModal">
+            <div class="overlay-header">
+                <svg width="28" height="28" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Cari judul series..." onkeyup="performSearch()">
+                <button class="close-btn" onclick="closeOverlay('searchModal')"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
+            <div class="results-grid" id="searchResults"></div>
+        </div>
+
+        <div class="full-overlay" id="historyModal">
+            <div class="overlay-header">
+                <svg width="28" height="28" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <h2>Riwayat Tontonan</h2>
+                <button class="close-btn" onclick="closeOverlay('historyModal')"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="results-grid" id="historyResults"></div>
         </div>
     </div>
 
     <script>
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('expanded'); }
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            if(el.classList.contains('active')) el.classList.remove('active');
+            else {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('active'));
+                el.classList.add('active');
+            }
+        }
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.nav-avatar') && !e.target.closest('.nav-btn')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('active'));
+            }
+        });
+
+        function openOverlay(id) {
+            const el = document.getElementById(id);
+            el.style.display = 'flex';
+            setTimeout(() => el.classList.add('active'), 10);
+            if(id === 'searchModal') { document.getElementById('searchInput').focus(); performSearch(); }
+            if(id === 'historyModal') { renderHistory(); }
+        }
+        function closeOverlay(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('active');
+            setTimeout(() => el.style.display = 'none', 300);
+        }
+
+        const allSeries = [
+            { id: 'michooy', name: 'Michooy', img: 'https://files.catbox.moe/dnyaor.jpg', eps: 12 },
+            { id: 'michelles', name: 'Michelles', img: 'https://files.catbox.moe/ibj4a2.jpg', eps: 12 },
+            { id: 'michoooos', name: 'Michoooos', img: 'https://files.catbox.moe/m2hd2v.jpeg', eps: 12 },
+            { id: 'michsx', name: 'Michsx', img: 'https://files.catbox.moe/4tjwfo.jpeg', eps: 12 },
+            { id: 'michahhs', name: 'Michahhs', img: 'https://files.catbox.moe/fgynpk.jpeg', eps: 11 },
+            { id: 'michneo', name: 'Michneo', img: 'https://files.catbox.moe/skijvp.jpg', eps: 5 },
+            { id: 'michraw', name: 'Michraw', img: 'https://files.catbox.moe/cvstos.jpg', eps: 5 },
+            { id: 'michsnap', name: 'Michsnap', img: 'https://files.catbox.moe/wslozw.jpg', eps: 5 },
+            { id: 'ngabalex', name: 'Ngabalex', img: 'https://files.catbox.moe/x0u6wh.jpg', eps: 12 },
+            { id: 'mecistop', name: 'Mecistop', img: 'https://files.catbox.moe/jrtpe5.jpg', eps: 12 },
+            { id: 'cece', name: 'Cece', img: 'https://files.catbox.moe/u7sd04.jpg', eps: 12 },
+            { id: 'michieer', name: 'Michieer', img: 'https://files.catbox.moe/yua9ji.jpg', eps: 12 },
+            { id: 'michdream', name: 'Michdream', img: 'https://files.catbox.moe/6c82hz.jpg', eps: 5 },
+            { id: 'michdark', name: 'Michdark', img: 'https://files.catbox.moe/labdhh.jpg', eps: 5 },
+            { id: 'michlite', name: 'Michlite', img: 'https://files.catbox.moe/ttohcw.jpg', eps: 5 }
+        ];
+
+        const catCompleted = allSeries.filter(s => s.eps === 12);
+        const catOngoing = allSeries.filter(s => s.eps < 12);
+
+        const heroData = [
+            { catId: 'michooy', title: 'Michooy Series', desc: 'Saksikan drama terbaru yang sedang trending. Eksklusif hanya di sini.', imgUrl: 'https://files.catbox.moe/dnyaor.jpg', videoUrl: 'video/michooy.mp4' },
+            { catId: 'michelles', title: 'Michelles', desc: 'Kisah menegangkan penuh misteri. Berhasilkah mereka selamat? Tonton sekarang.', imgUrl: 'https://files.catbox.moe/ibj4a2.jpg', videoUrl: 'video/michelles.mp4' },
+            { catId: 'michoooos', title: 'Michoooos', desc: 'Petualangan epik berlanjut. Jangan lewatkan setiap episodenya.', imgUrl: 'https://files.catbox.moe/m2hd2v.jpeg', videoUrl: 'video/michoooos.mp4' },
+            { catId: 'michsx', title: 'Michsx Premiere', desc: 'Aksi memukau tiada henti. Series paling dinanti tahun ini akhirnya rilis lengkap.', imgUrl: 'https://files.catbox.moe/4tjwfo.jpeg', videoUrl: 'video/michsx.mp4' },
+            { catId: 'michahhs', title: 'Michahhs', desc: 'Konflik tak terduga mulai bermunculan. Siapakah yang akan bertahan?', imgUrl: 'https://files.catbox.moe/fgynpk.jpeg', videoUrl: 'video/michahhs.mp4' },
+            { catId: 'michneo', title: 'Michneo', desc: 'Dunia baru dengan aturan baru. Bersiaplah untuk terkejut.', imgUrl: 'https://files.catbox.moe/skijvp.jpg', videoUrl: 'video/michneo.mp4' },
+            { catId: 'michraw', title: 'Michraw', desc: 'Kisah cinta dan pengkhianatan yang menguras air mata.', imgUrl: 'https://files.catbox.moe/cvstos.jpg', videoUrl: 'video/michraw.mp4' },
+            { catId: 'michsnap', title: 'Michsnap', desc: 'Tertangkap kamera! Rahasia terbesar akhirnya terbongkar.', imgUrl: 'https://files.catbox.moe/wslozw.jpg', videoUrl: 'video/michsnap.mp4' },
+            { catId: 'ngabalex', title: 'Ngabalex', desc: 'Komedi segar yang siap membuat harimu lebih ceria.', imgUrl: 'https://files.catbox.moe/x0u6wh.jpg', videoUrl: 'video/ngabalex.mp4' },
+            { catId: 'mecistop', title: 'Mecistop', desc: 'Pertarungan hidup dan mati di arena yang tak kenal ampun.', imgUrl: 'https://files.catbox.moe/jrtpe5.jpg', videoUrl: 'video/mecistop.mp4' },
+            { catId: 'cece', title: 'Cece', desc: 'Satu keputusan mengubah segalanya. Tonton drama penuh emosi ini.', imgUrl: 'https://files.catbox.moe/u7sd04.jpg', videoUrl: 'video/cece.mp4' },
+            { catId: 'michieer', title: 'Michieer', desc: 'Mereka kembali dengan misi yang lebih mematikan.', imgUrl: 'https://files.catbox.moe/yua9ji.jpg', videoUrl: 'video/michieer.mp4' },
+            { catId: 'michdream', title: 'Michdream', desc: 'Antara mimpi dan kenyataan, batasnya semakin tipis.', imgUrl: 'https://files.catbox.moe/6c82hz.jpg', videoUrl: 'video/michdream.mp4' },
+            { catId: 'michdark', title: 'Michdark', desc: 'Sisi gelap yang selama ini disembunyikan akhirnya terungkap.', imgUrl: 'https://files.catbox.moe/labdhh.jpg', videoUrl: 'video/michdark.mp4' },
+            { catId: 'michlite', title: 'Michlite', desc: 'Tontonan ringan untuk menemani akhir pekanmu yang santai.', imgUrl: 'https://files.catbox.moe/ttohcw.jpg', videoUrl: 'video/michlite.mp4' }
+        ];
+
+        let currentHero = 0;
+        let heroInterval;
+
+        function updateHero() {
+            const data = heroData[currentHero];
+            const contentDiv = document.getElementById('bannerContent');
+            const bgImage = document.getElementById('bgImage');
+            const bgVideo = document.getElementById('bgVideo');
+
+            contentDiv.classList.add('fade-out');
+
+            setTimeout(() => {
+                document.getElementById('heroTitle').innerText = data.title;
+                document.getElementById('heroDesc').innerText = data.desc;
+                
+                // 1. Tampilkan Gambar Secara Instan (Biar nggak blank)
+                bgImage.src = data.imgUrl;
+                bgImage.classList.add('active');
+                
+                // 2. Sembunyikan Video Dulu (Transparan)
+                bgVideo.classList.remove('active');
+                // Hapus fungsi lama biar nggak double eksekusi
+                bgVideo.onplaying = null; 
+
+                if (data.videoUrl && data.videoUrl.trim() !== '') {
+                    bgVideo.src = data.videoUrl;
+                    
+                    // 3. Pas video udah "Ready" & muter, baru ditampilin pelan-pelan
+                    bgVideo.onplaying = () => {
+                        bgVideo.classList.add('active');
+                    };
+                } else {
+                    bgVideo.src = '';
+                }
+
+                contentDiv.classList.remove('fade-out');
+            }, 500);
+        }
+
+        function nextHero() { currentHero = (currentHero + 1) % heroData.length; updateHero(); }
+        function playHero() {
+            const data = heroData[currentHero];
+            const cat = allSeries.find(c => c.id === data.catId);
+            if(cat) openSeries(cat.id, cat.name, cat.img);
+        }
+        
+        updateHero();
+        function startInterval() { heroInterval = setInterval(nextHero, 7000); }
+        startInterval();
+
+        // RENDER POSTERS KATEGORI
+        function createPoster(cat) {
+            const div = document.createElement('div');
+            div.className = 'poster';
+            div.innerHTML = `<div class="ep-badge">${cat.eps} Ep</div><img src="${cat.img}" loading="lazy"><div class="poster-title">${cat.name}</div>`;
+            div.onclick = () => openSeries(cat.id, cat.name, cat.img);
+            return div;
+        }
+
+        function renderRowData(containerId, dataArray) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            dataArray.forEach(cat => container.appendChild(createPoster(cat)));
+        }
+
+        renderRowData('rowCompleted', catCompleted);
+        renderRowData('rowNew', catOngoing);
+
+        // FUNGSI FILTER SIDEBAR / BOTTOM NAV
+        function filterView(type, element) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.b-nav-item').forEach(l => l.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const banner = document.getElementById('mainBanner');
+            const secComp = document.getElementById('secCompleted');
+            const secNew = document.getElementById('secNew');
+            const rowComp = document.getElementById('rowCompleted');
+            const rowNew = document.getElementById('rowNew');
+
+            if(type === 'home') {
+                banner.style.display = 'flex';
+                secComp.style.display = 'block';
+                secNew.style.display = 'block';
+                secNew.style.marginTop = '30px';
+                rowComp.classList.remove('grid-mode');
+                rowNew.classList.remove('grid-mode');
+            } else if (type === 'completed') {
+                banner.style.display = 'none';
+                secComp.style.display = 'block';
+                secNew.style.display = 'none';
+                rowComp.classList.add('grid-mode');
+            } else if (type === 'new') {
+                banner.style.display = 'none';
+                secComp.style.display = 'none';
+                secNew.style.display = 'block';
+                secNew.style.marginTop = '0';
+                rowNew.classList.add('grid-mode');
+            }
+        }
+
+        function openSeries(id, name, img) {
+            localStorage.setItem('selectedCategoryId', id);
+            localStorage.setItem('selectedCategoryName', name);
+            localStorage.setItem('selectedCategoryImg', img);
+            
+            let history = JSON.parse(localStorage.getItem('michieHistory') || '[]');
+            history = history.filter(h => h.id !== id);
+            history.unshift({id, name, img, eps: allSeries.find(s=>s.id===id).eps});
+            if(history.length > 10) history.pop();
+            localStorage.setItem('michieHistory', JSON.stringify(history));
+
+            window.location.href = 'episodes.html';
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+            const filtered = allSeries.filter(cat => cat.name.toLowerCase().includes(query));
+            if(filtered.length === 0) {
+                resultsDiv.innerHTML = '<p style="color:#aaa; grid-column: 1/-1; text-align:center; padding-top:20px;">Series tidak ditemukan.</p>';
             } else {
-                header.classList.remove('scrolled');
+                filtered.forEach(cat => resultsDiv.appendChild(createPoster(cat)));
             }
-        });
-
-        // Tab navigation
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
-        });
-
-        // Bottom navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-            });
-        });
-
-        // Smooth scroll to content
-        function scrollToContent() {
-            document.querySelector('.content-section').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
         }
 
-        // Open anime function
-        function openAnime(anime) {
-            // Add loading animation
-            const cards = document.querySelectorAll('.anime-card');
-            cards.forEach(card => {
-                if (card.onclick.toString().includes(anime)) {
-                    card.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        window.location.href = `episodes.html?anime=${anime}`;
-                    }, 200);
-                }
-            });
-        }
-
-        // Add touch gestures for mobile
-        let startX = 0;
-        let startY = 0;
-
-        document.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!startX || !startY) return;
-
-            const xDiff = startX - e.touches[0].clientX;
-            const yDiff = startY - e.touches[0].clientY;
-
-            if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                // Horizontal swipe
-                const grids = document.querySelectorAll('.anime-grid');
-                grids.forEach(grid => {
-                    if (xDiff > 0) {
-                        grid.scrollLeft += 50; // Swipe left
-                    } else {
-                        grid.scrollLeft -= 50; // Swipe right
-                    }
-                });
+        function renderHistory() {
+            const historyDiv = document.getElementById('historyResults');
+            historyDiv.innerHTML = '';
+            const history = JSON.parse(localStorage.getItem('michieHistory') || '[]');
+            if(history.length === 0) {
+                historyDiv.innerHTML = '<p style="color:#aaa; grid-column: 1/-1; text-align:center; padding-top:20px;">Belum ada riwayat tontonan.</p>';
+            } else {
+                history.forEach(cat => historyDiv.appendChild(createPoster(cat)));
             }
-
-            startX = null;
-            startY = null;
-        });
-
-        // Lazy loading for images
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.classList.add('loaded');
-                    observer.unobserve(img);
-                }
-            });
-        });
-
-        document.querySelectorAll('.anime-card img').forEach(img => {
-            imageObserver.observe(img);
-        });
+        }
     </script>
 </body>
 </html>
